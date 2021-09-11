@@ -38,7 +38,6 @@ int main(int argc, char const *argv[])
     vector<string> write;
     int line = 0;
     int pc = 0;
-    int aux = 0;
     bool sectionText;
 
     newfile.open(argv[1], ios::in);
@@ -90,6 +89,7 @@ int main(int argc, char const *argv[])
 
                     if (check.LabelDefinition(reader.tokens, reader.tokens[i]))
                     {
+                        reader.TokenRollBack(write, symbs, reader.tokens[0]);
                         reader.DeleteLabel();
                     }
                     symbs.LabelSimpleSearch(reader.tokens, reader.tokens[i], i);

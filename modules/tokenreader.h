@@ -32,7 +32,7 @@ public:
                 temp = "";
                 break;
             case ',':
-                AddToken(temp, ",");
+                AddToken(temp);
                 temp = "";
                 break;
             default:
@@ -88,10 +88,10 @@ public:
         tokens.clear();
     }
 
-    void DeleteLabel()
+    void RemoveBack(int n)
     {
-        tokens.erase(tokens.begin());
-        tokens.erase(tokens.begin());
+        for (int i = 0; i < n; i++)
+            tokens.erase(tokens.begin());
 
         //tokens.erase(tokens.begin() + 1);
     }
@@ -103,30 +103,6 @@ public:
         {
             aux = aux + tokens[i] + " ";
         }
-
         return aux;
-    }
-
-    /// Metodo de passagem não otmizado
-    void RoolBackLabel(vector<string> &wrote, TS ts)
-    {
-        string aux;
-        for (int i = 0; i < (signed)ts.symbs.size(); i++)
-        {
-            // cout << ts.symbs[i].name << " " << ts.symbs[i].secData << " " << ts.symbs[i].positions.size() << endl;
-            if (ts.symbs[i].secData == true)
-
-            {
-                for (int j = 1; j < (signed)ts.symbs[i].positions.size(); j++)
-                {
-                    GenerateTokens(wrote[ts.symbs[i].lines[j]]);
-
-                    tokens[ts.symbs[i].positions[j] + 1] = ts.symbs[i].base;
-                    wrote[ts.symbs[i].lines[j]] = LineWrite("");
-
-                    ClearTokens();
-                }
-            }
-        }
     }
 };

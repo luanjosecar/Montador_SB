@@ -17,9 +17,23 @@ public:
 
     void AddSymbol(string name, int pos, int line, int value, bool status)
     {
-        Symbols aux;
-        aux.SetValues(name, line, pos, value, status);
-        this->symbs.push_back(aux);
+        bool temp = false;
+        for (int i = 0; i < (signed)symbs.size(); i++)
+        {
+
+            if (name == symbs[i].name)
+            {
+                symbs[i].UpdateSymbolValue(line, pos, value, status);
+                temp = true;
+                break;
+            }
+        }
+        if (!temp)
+        {
+            Symbols aux;
+            aux.SetValues(name, line, pos, value, status);
+            this->symbs.push_back(aux);
+        }
     }
 
     void UpdateSymbol(string name, int pos, int line, int value, bool status)
@@ -70,11 +84,16 @@ public:
         if (status && !ValidFunction(name) && !(Validation::CheckNumber(name)) && !CheckSpecial(name))
         {
             AddSymbol(name, pos, line, value, status);
-            //cout << "Label " << name << " Adcionada Com valor " << value << endl;
+            // cout << "Label " << name << " Adcionada Com valor " << value << endl;
+        }
+        else if (CheckUsedToken(name) == -2 && !ValidFunction(name) && !(Validation::CheckNumber(name)) && !CheckSpecial(name))
+        {
+            // cout << "Label " << name << " Adcionada Com valor " << value << endl;
+            AddSymbol(name, pos, line, value, false);
         }
         else if (!ValidFunction(name) && !(Validation::CheckNumber(name)) && !CheckSpecial(name))
         {
-            //cout << "Label " << name << " Update in value " << value << endl;
+            // cout << "Label " << name << " Update in value " << value << endl;
             UpdateSymbol(name, pos, line, value + 1, status);
         }
         // Update da Label
@@ -82,7 +101,7 @@ public:
 
     void LabelConstCheck(vector<string> tokens)
     {
-        if (tokens[2] == "CONST")
+        if (tokens[2] == "CONST" && tokens[1] == ":")
         {
             if (Validation::CheckNumber(tokens[3]))
             {
@@ -96,7 +115,7 @@ public:
 
     void LabelSpaceCheck(vector<string> tokens)
     {
-        if (tokens[2] == "SPACE")
+        if (tokens[2] == "SPACE" && tokens[1] == ":")
         {
             Symbols aux;
             aux.SetValues(tokens[0], 0, 0, 0, true);
@@ -142,12 +161,21 @@ public:
 
     int CheckUsedToken(string name)
     {
+        bool aux = true;
         for (int i = 0; i < (signed)symbs.size(); i++)
         {
             // cout << name << " - - " << symbs[i].name << " " << symbs[i].status << " " << symbs[i].secData << " " << symbs[i].base << endl;
             if (name == symbs[i].name && symbs[i].status && !symbs[i].secData)
                 return i;
         }
+        for (int i = 0; i < (signed)symbs.size(); i++)
+        {
+            // cout << name << " - - " << symbs[i].name << " " << symbs[i].status << " " << symbs[i].secData << " " << symbs[i].base << endl;
+            if (name == symbs[i].name && !symbs[i].secData)
+                aux = false;
+        }
+        if (aux)
+            return -2;
         return -1;
     }
 
@@ -156,7 +184,7 @@ public:
 
         int aux;
         aux = CheckUsedToken(name);
-        if (aux != -1)
+        if (aux >= 0)
         {
             token[pos] = symbs[aux].base;
         }

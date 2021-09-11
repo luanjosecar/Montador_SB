@@ -2,19 +2,17 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "modules\tokenreader.h"
-#include "modules\tokenvalidator.h"
-#include "modules\symboltable.h"
-#include "modules\functioncheck.h"
+#include "..\modules\tokenreader.h"
 
 using namespace std;
 
 int main(int argc, char const *argv[])
 {
     string teste;
-    teste = "ADD ALGO, ALGO2 MAISALGO";
+    teste = ";";
     TokenReader a;
     a.GenerateTokens(teste);
+    cout << "Tokens Size " << a.tokens.size() << endl;
     a.PrintTokens();
     return 0;
 }

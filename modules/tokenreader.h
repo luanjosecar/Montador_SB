@@ -48,6 +48,7 @@ public:
     {
         for (int i = 0; i < (signed)tokens.size(); ++i)
             cout << tokens[i] << " ";
+        cout << endl;
     }
 
     void AddToken(string s, string separetor = "")

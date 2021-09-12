@@ -38,7 +38,7 @@ int main(int argc, char const *argv[])
     vector<string> write;
     int line = 0;
     int pc = 0;
-    bool sectionText;
+    bool sectionText = false;
 
     newfile.open(argv[1], ios::in);
 
@@ -72,38 +72,37 @@ int main(int argc, char const *argv[])
                 cout << "  -- erro S1 " << reader.tokens.size() << endl;
             }
 
-            sectionText = Validation::SectionCheck(reader.tokens);
-            reader.PrintTokens();
             //--------------------------------------------------
+            // Validação dos valores na SECTION DATA *******************************
+            if (Validation::SectionCheck(reader.tokens))
+            {
+                sectionText = !sectionText;
+                reader.ClearTokens();
+                continue;
+            }
 
             if (sectionText)
             {
-                // if (sectionText && Validation::SectionCheck(reader.tokens))
-                //     break;
                 symbs.SectionValues(reader.tokens);
             }
-            // else
-            // {
-            //     for (int i = 0; i < (signed)reader.tokens.size(); i++)
-            //     {
-            //         symbs.ValidateSymbol(reader.tokens[i], i, line, pc, check.LabelDefinition(reader.tokens, reader.tokens[i]));
+            //***********************************************************************
 
-            //         if (check.LabelDefinition(reader.tokens, reader.tokens[i]))
-            //         {
-            //             reader.TokenRollBack(write, symbs, reader.tokens[0]);
-            //             reader.DeleteLabel();
-            //         }
-            //         symbs.LabelSimpleSearch(reader.tokens, reader.tokens[i], i);
-            //     }
-            //     funcs.Function(reader.tokens, pc, symbs);
-            //     write.push_back(reader.LineWrite(to_string(pc)));
-            //     line++;
-            // }
+            else
+            {
+                // Verifica se o item em análise é uma Label
+                if (Validation::LabelFunction(reader.tokens))
+                {
+                }
+            }
 
-            // // cout << endl;
+            line++;
             reader.ClearTokens();
-            // //cout << tp << "\n";
         }
+
+        // // cout << endl;
+
+        // //cout << tp << "\n";
+
         newfile.close(); //close the file object.
     }
 

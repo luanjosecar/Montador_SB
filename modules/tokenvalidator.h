@@ -41,7 +41,7 @@ public:
         {
             if (!(CheckNumber(tokens[i]) || CheckString(tokens[i])))
             {
-                //cout << tokens[i] << endl;
+                cout << tokens[i] << endl;
                 break;
             }
             i++;
@@ -122,7 +122,7 @@ public:
         return false;
     }
 
-    static bool SectioncHECK(vector<string> token)
+    static bool SectionCheck(vector<string> token)
     {
 
         if ((signed)token.size() == 2)

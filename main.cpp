@@ -49,68 +49,66 @@ int main(int argc, char const *argv[])
         {
             std::istringstream ss(tp);
             reader.GenerateTokens(tp);
-            sectionText = Validation::SectionAnalises(reader.tokens, sectionText);
 
             // ----------------------------------------------- primeiros testes
 
             // Análise da estrutura lexa do sistema
-            // if (Validation::AnaliseLexa(reader.tokens))
-            // {
-            //     //cout << "   -- L1 OK";
-            // }
-            // else
-            // {
-            //     cout << "  -- erro L1 " << reader.tokens.size();
-            // }
+            if (Validation::CkeckTokens(reader.tokens))
+            {
+                //cout << "   -- L1 OK";
+            }
+            else
+            {
+                cout << "  -- erro L1 " << reader.tokens.size() << endl;
+            }
 
             // Analise sintática 1
-            // if (Validation::CheckTokens(reader.tokens))
-            // {
-            //     //cout << "   -- S1 OK";
-            // }
-            // else
-            // {
-            //     cout << "  -- erro S1 " << reader.tokens.size();
-            // }
+            if (!(Validation::CheckDuplicates(reader.tokens)))
+            {
+                //cout << "   -- S1 OK";
+            }
+            else
+            {
+                cout << "  -- erro S1 " << reader.tokens.size() << endl;
+            }
 
-            // cout << "\n";
-
+            sectionText = Validation::SectionCheck(reader.tokens);
+            reader.PrintTokens();
             //--------------------------------------------------
 
             if (sectionText)
             {
-                symbs.CheckLabelValue(reader.tokens);
+                // if (sectionText && Validation::SectionCheck(reader.tokens))
+                //     break;
+                symbs.SectionValues(reader.tokens);
             }
-            else
-            {
-                for (int i = 0; i < (signed)reader.tokens.size(); i++)
-                {
-                    symbs.ValidateSymbol(reader.tokens[i], i, line, pc, check.LabelDefinition(reader.tokens, reader.tokens[i]));
+            // else
+            // {
+            //     for (int i = 0; i < (signed)reader.tokens.size(); i++)
+            //     {
+            //         symbs.ValidateSymbol(reader.tokens[i], i, line, pc, check.LabelDefinition(reader.tokens, reader.tokens[i]));
 
-                    if (check.LabelDefinition(reader.tokens, reader.tokens[i]))
-                    {
-                        reader.TokenRollBack(write, symbs, reader.tokens[0]);
-                        reader.DeleteLabel();
-                    }
-                    symbs.LabelSimpleSearch(reader.tokens, reader.tokens[i], i);
-                }
-                funcs.Function(reader.tokens, pc, symbs);
-                write.push_back(reader.LineWrite(to_string(pc)));
-                line++;
-            }
+            //         if (check.LabelDefinition(reader.tokens, reader.tokens[i]))
+            //         {
+            //             reader.TokenRollBack(write, symbs, reader.tokens[0]);
+            //             reader.DeleteLabel();
+            //         }
+            //         symbs.LabelSimpleSearch(reader.tokens, reader.tokens[i], i);
+            //     }
+            //     funcs.Function(reader.tokens, pc, symbs);
+            //     write.push_back(reader.LineWrite(to_string(pc)));
+            //     line++;
+            // }
 
-            // reader.PrintTokens();
-            // cout << endl;
+            // // cout << endl;
             reader.ClearTokens();
-            //cout << tp << "\n";
+            // //cout << tp << "\n";
         }
-        symbs.AddTextData(pc); // Adiciona os itens para o campo TEXT
-        reader.RoolBackLabel(write, symbs);
         newfile.close(); //close the file object.
     }
 
-    for (int i = 0; i < (signed)write.size(); i++)
-        cout << write[i] << endl;
-    // symbs.PrintTable();
+    // for (int i = 0; i < (signed)write.size(); i++)
+    //     cout << write[i] << endl;
+    symbs.PrintTable();
     return 0;
 }

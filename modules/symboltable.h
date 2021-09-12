@@ -177,9 +177,9 @@ public:
             int temp = CheckTokenValue(name);
             for (int i = 0; i < (signed)symbs[temp].positions.size(); i++)
             {
-                TokenReader aux;
-                aux.GenerateTokens(writer[symbs[temp].lines[i]]);
-                aux.tokens[symbs[temp].positions[i]] = symbs[temp].base;
+                // TokenReader aux;
+                // aux.GenerateTokens(writer[symbs[temp].lines[i]]);
+                // aux.tokens[symbs[temp].positions[i]] = symbs[temp].base;
             }
         }
     }

@@ -9,12 +9,8 @@ using namespace std;
 int main(int argc, char const *argv[])
 {
     vector<string> teste;
-    teste.push_back("Label");
-    teste.push_back(":");
-    teste.push_back("bac");
-    teste.push_back("SPACE0");
-    teste.push_back(",");
-    teste.push_back("SPACE+");
+    teste.push_back("SECTION");
+    teste.push_back("TEXT");
     Validation a;
 
     bool base = a.CkeckTokens(teste);

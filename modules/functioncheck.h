@@ -29,16 +29,23 @@ public:
     //Validation a;
     vector<string> basefunc{"ADD", "SUB", "MULT", "DIV", "JMP", "JMPP", "JMPN", "JMPZ", "COPY", "LOAD", "STORE", "INPUT", "OUTPUT", "STOP"};
     // TS ts;
+    int base = 0;
 
     void Function(vector<string> &tokens, int &pc)
     {
+
         // this->ts = ts;
         bool aux = true;
+        if (Validation::LabelFunction(tokens))
+            base = 2;
+        else
+            base = 0;
+
         for (int i = 0; i < (signed)basefunc.size(); i++)
         {
-            if (tokens[0] == basefunc[i])
+            if (tokens[base] == basefunc[i])
             {
-                tokens[0] = to_string(i + 1);
+                tokens[base] = to_string(i + 1);
                 switch (i + 1)
                 {
                 case ADD:
@@ -81,7 +88,7 @@ public:
 
     bool FuncTypeA(vector<string> &tokens)
     {
-        if ((signed)tokens.size() == 2)
+        if ((signed)tokens.size() == (2 + base))
         {
             // Parte substituida para a criação do sistema
             // if (!Validation::CheckNumber(tokens[1]))
@@ -101,7 +108,7 @@ public:
 
     bool FuncTypeB(vector<string> &tokens)
     {
-        if ((signed)tokens.size() == 1)
+        if ((signed)tokens.size() == (1 + base))
         {
             return true;
         }
@@ -112,9 +119,9 @@ public:
     bool FuncTypeC(vector<string> &tokens)
     {
         // cout << "  " << tokens[0] << endl;
-        if ((signed)tokens.size() == 4)
+        if ((signed)tokens.size() == (4 + base))
         {
-            if (tokens[2] == ",")
+            if (tokens[2 + base] == ",")
             {
                 // cout << "  " << tokens[1] << endl;
                 // cout << "  " << tokens[3] << endl;
@@ -130,7 +137,7 @@ public:
                 // {
                 //     tokens[3] = TokenValue(tokens[3]);
                 // }
-                tokens.erase(tokens.begin() + 2);
+                tokens.erase(tokens.begin() + 2 + base);
                 return true;
             }
         }

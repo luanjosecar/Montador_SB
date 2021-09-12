@@ -21,6 +21,7 @@ public:
 
         if (CheckToken(name))
         {
+
             UpdateSymbol(name, pos, line, value, status);
         }
         else
@@ -33,21 +34,33 @@ public:
     // Update do simbolo
     void UpdateSymbol(string name, int pos, int line, int value, bool status)
     {
-        for (int i = 0; i < (signed)symbs.size(); i++)
-        {
 
-            if (name == symbs[i].name)
-            {
-                symbs[i].UpdateSymbolValue(line, pos, value, status);
-                break;
-            }
+        if (!symbs[CheckTokenValue(name)].status)
+            symbs[CheckTokenValue(name)].UpdateSymbolValue(line, pos, value, status);
+    }
+
+    void TokenAdder(string name, int pos, int line, int value, int status)
+    {
+
+        if (CheckToken(name))
+        {
+            UpdateSymbol(name, pos, line, value, status);
         }
+        else if (!CheckCaracteristc(name))
+        {
+            AddSymbol(name, pos, line, value, status);
+        }
+    }
+
+    bool CheckCaracteristc(string name)
+    {
+        return CheckSpecial(name) || ValidFunction(name);
     }
 
     // Verifica se o token existe na TS
     bool CheckToken(string name)
     {
-        for (int i; i < (signed)symbs.size(); i++)
+        for (int i = 0; i < (signed)symbs.size(); i++)
         {
             if (name == symbs[i].name)
                 return true;
@@ -131,7 +144,7 @@ public:
     {
         for (int i = 0; i < (signed)symbs.size(); i++)
         {
-            if (name == symbs[i].name && symbs[i].status && !symbs[i].secData)
+            if (name == symbs[i].name)
                 return i;
         }
 
@@ -143,7 +156,7 @@ public:
     {
         int aux;
         aux = CheckTokenValue(name);
-        if (aux >= 0)
+        if (aux >= 0 && pos > 0 && symbs[aux].status)
         {
             token[pos] = symbs[aux].base;
         }
@@ -189,7 +202,7 @@ public:
 
         for (int i = 0; i < (signed)symbs.size(); i++)
         {
-            cout << symbs[i].name << "------------ " << symbs[i].base << endl;
+            cout << symbs[i].name << "------------ " << symbs[i].base << " ---" << symbs[i].status << endl;
             cout << "Lines = ";
             for (int j = 0; j < (signed)symbs[i].lines.size(); j++)
             {

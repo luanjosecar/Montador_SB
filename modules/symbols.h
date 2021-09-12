@@ -24,7 +24,7 @@ public:
         this->value.push_back(value);
 
         this->status = status || (this->status);
-        if ((this->status) && this->secData)
+        if ((this->status))
         {
             this->base = to_string(value);
         }

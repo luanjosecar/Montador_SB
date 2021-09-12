@@ -89,13 +89,21 @@ int main(int argc, char const *argv[])
 
             else
             {
+                // Roda a analise de funções
+                funcs.Function(reader.tokens, pc);
                 // Verifica se o item em análise é uma Label
-                if (Validation::LabelFunction(reader.tokens))
+                for (int i = 0; i < (signed)reader.tokens.size(); i++)
                 {
+                    symbs.TokenAdder(reader.tokens[i], i, line, pc, (Validation::LabelFunction(reader.tokens) && i == 0));
                 }
+                if (Validation::LabelFunction(reader.tokens))
+                    reader.RemoveFront(2);
+
+                reader.PrintTokens();
             }
 
             line++;
+
             reader.ClearTokens();
         }
 
@@ -107,7 +115,7 @@ int main(int argc, char const *argv[])
     }
 
     // for (int i = 0; i < (signed)write.size(); i++)
-    //     cout << write[i] << endl;
-    symbs.PrintTable();
+    // cout << write[i] << endl;
+    // symbs.PrintTable();
     return 0;
 }

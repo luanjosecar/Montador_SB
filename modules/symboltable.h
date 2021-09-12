@@ -5,6 +5,7 @@
 #include <string>
 #include <regex>
 
+#include "tokenreader.h"
 #include "symbols.h"
 #include "tokenvalidator.h"
 
@@ -17,25 +18,19 @@ public:
 
     void AddSymbol(string name, int pos, int line, int value, bool status)
     {
-        bool temp = false;
-        for (int i = 0; i < (signed)symbs.size(); i++)
-        {
 
-            if (name == symbs[i].name)
-            {
-                symbs[i].UpdateSymbolValue(line, pos, value, status);
-                temp = true;
-                break;
-            }
+        if (CheckToken(name))
+        {
+            UpdateSymbol(name, pos, line, value, status);
         }
-        if (!temp)
+        else
         {
             Symbols aux;
             aux.SetValues(name, line, pos, value, status);
-            this->symbs.push_back(aux);
+            symbs.push_back(aux);
         }
     }
-
+    // Update do simbolo
     void UpdateSymbol(string name, int pos, int line, int value, bool status)
     {
         for (int i = 0; i < (signed)symbs.size(); i++)
@@ -49,7 +44,8 @@ public:
         }
     }
 
-    bool CheckSymbol(string name)
+    // Verifica se o token existe na TS
+    bool CheckToken(string name)
     {
         for (int i; i < (signed)symbs.size(); i++)
         {
@@ -59,6 +55,7 @@ public:
         return false;
     }
 
+    // Verifica se o token em análise é uma função do sistema
     bool ValidFunction(string name)
     {
         for (int i = 0; i < (signed)Funcs.size(); i++)
@@ -71,65 +68,120 @@ public:
         return false;
     }
 
+    // Verifica se é um caracter especial
     bool CheckSpecial(string name)
     {
-        // True se for um simbolo sozinho valido
-
         return name == ":" || name == ",";
     }
 
-    void ValidateSymbol(string name, int pos, int line, int value, bool status)
+    // Verifica se o SPACE tem algum valor adicional
+    int SpaceValue(string name)
     {
-        // Adiciona uma nova label
-        if (status && !ValidFunction(name) && !(Validation::CheckNumber(name)) && !CheckSpecial(name))
+
+        if (name == "SPACE")
+            return 0;
+        if (name.length() < 6)
+            return -1;
+
+        char aux2;
+        string temp = "";
+        const char *aux = name.c_str();
+        if (strncmp(aux, "SPACE+", 10) > 0)
         {
-            AddSymbol(name, pos, line, value, status);
-            // cout << "Label " << name << " Adcionada Com valor " << value << endl;
+            for (int i = 6; i < (signed)name.length(); i++)
+            {
+                aux2 = name[i];
+                temp.push_back(aux2);
+            }
         }
-        else if (CheckUsedToken(name) == -2 && !ValidFunction(name) && !(Validation::CheckNumber(name)) && !CheckSpecial(name))
-        {
-            // cout << "Label " << name << " Adcionada Com valor " << value << endl;
-            AddSymbol(name, pos, line, value, false);
-        }
-        else if (!ValidFunction(name) && !(Validation::CheckNumber(name)) && !CheckSpecial(name))
-        {
-            // cout << "Label " << name << " Update in value " << value << endl;
-            UpdateSymbol(name, pos, line, value + 1, status);
-        }
-        // Update da Label
+        if (Validation::CheckNumber(temp))
+            return atoi(temp.c_str());
+        else
+            return -1;
     }
 
-    void LabelConstCheck(vector<string> tokens)
+    // Verifica se a alocação esta acontecendo durante um SPACE TEXT ou DATA
+    void SectionValues(vector<string> tokens)
     {
-        if (tokens[2] == "CONST" && tokens[1] == ":")
+        if (tokens.size() == 3) // Caso LABEL : SPACE
         {
-            if (Validation::CheckNumber(tokens[3]))
+            if (SpaceValue(tokens[tokens.size() - 1]) != -1)
             {
                 Symbols aux;
-                aux.SetValues(tokens[0], 0, 0, 0, true);
-                aux.SetSection(tokens[3], true);
+                aux.secData = true;
+                aux.constFunc = false;
+                aux.name = tokens[0];
+                aux.constValue = to_string(SpaceValue(tokens[tokens.size() - 1]));
                 symbs.push_back(aux);
             }
         }
-    }
-
-    void LabelSpaceCheck(vector<string> tokens)
-    {
-        if (tokens[2] == "SPACE" && tokens[1] == ":")
+        if (tokens.size() == 4 && tokens[2] == "CONST" && tokens[1] == ":" && Validation::CheckNumber(tokens[3]))
         {
             Symbols aux;
-            aux.SetValues(tokens[0], 0, 0, 0, true);
-            aux.SetSection("", false);
+            aux.secData = true;
+            aux.constFunc = true;
+            aux.name = tokens[0];
+            aux.constValue = tokens[3];
             symbs.push_back(aux);
         }
     }
 
-    void CheckLabelValue(vector<string> tokens)
+    // Retorna a posição do token na tabela se o mesmo estiver definido
+    int CheckTokenValue(string name)
     {
-        if (tokens.size() == 4)
-            LabelConstCheck(tokens);
-        if (tokens.size() == 3)
-            LabelSpaceCheck(tokens);
+        for (int i = 0; i < (signed)symbs.size(); i++)
+        {
+            if (name == symbs[i].name && symbs[i].status && !symbs[i].secData)
+                return i;
+        }
+
+        return -1;
+    }
+
+    // Define o valor de uma LABEL
+    void LabelSimpleSearch(vector<string> &token, string name, int pos)
+    {
+        int aux;
+        aux = CheckTokenValue(name);
+        if (aux >= 0)
+        {
+            token[pos] = symbs[aux].base;
+        }
+    }
+
+    // Adiciona os valores de PC para a SectionDATA
+    void AddTextData(int pos, vector<string> &writer)
+    {
+        int value = pos + 1;
+        for (int i = 0; i < (signed)symbs.size(); i++)
+        {
+            if (symbs[i].secData)
+            {
+                symbs[i].base = to_string(value);
+                RoolBack(writer, symbs[i].name);
+
+                // Coreção do value para Space++
+                if (symbs[i].constFunc)
+                    value = value + atoi(symbs[i].constValue.c_str());
+                else
+                    value++;
+            }
+        }
+    }
+
+    // -------------------------------------------------------------------
+    void RoolBack(vector<string> &writer, string name)
+    {
+        if (CheckToken(name))
+        {
+            int temp = CheckTokenValue(name);
+            for (int i = 0; i < (signed)symbs[temp].positions.size(); i++)
+            {
+                TokenReader aux;
+                aux.GenerateTokens(writer[symbs[temp].lines[i]]);
+                aux.tokens[symbs[temp].positions[i]] = symbs[temp].base;
+            }
+        }
     }
 
     void PrintTable()
@@ -156,50 +208,6 @@ public:
                 cout << symbs[i].value[j] << " ";
             }
             cout << "\n";
-        }
-    }
-
-    int CheckUsedToken(string name)
-    {
-        bool aux = true;
-        for (int i = 0; i < (signed)symbs.size(); i++)
-        {
-            // cout << name << " - - " << symbs[i].name << " " << symbs[i].status << " " << symbs[i].secData << " " << symbs[i].base << endl;
-            if (name == symbs[i].name && symbs[i].status && !symbs[i].secData)
-                return i;
-        }
-        for (int i = 0; i < (signed)symbs.size(); i++)
-        {
-            // cout << name << " - - " << symbs[i].name << " " << symbs[i].status << " " << symbs[i].secData << " " << symbs[i].base << endl;
-            if (name == symbs[i].name && !symbs[i].secData)
-                aux = false;
-        }
-        if (aux)
-            return -2;
-        return -1;
-    }
-
-    void LabelSimpleSearch(vector<string> &token, string name, int pos)
-    {
-
-        int aux;
-        aux = CheckUsedToken(name);
-        if (aux >= 0)
-        {
-            token[pos] = symbs[aux].base;
-        }
-    }
-
-    void AddTextData(int pos)
-    {
-        int value = pos + 1;
-        for (int i = 0; i < (signed)symbs.size(); i++)
-        {
-            if (symbs[i].secData)
-            {
-                symbs[i].base = to_string(value);
-                value++;
-            }
         }
     }
 };

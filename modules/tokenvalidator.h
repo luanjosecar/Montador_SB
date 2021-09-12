@@ -14,7 +14,7 @@ public:
     static bool CkeckTokens(vector<string> tokens)
     {
         int pos = 0;
-        if (tokens.size() > 6)
+        if (tokens.size() > 7)
             return false;
         if (LabelFunction(tokens))
             pos = 2;
@@ -33,6 +33,7 @@ public:
         return false;
     }
 
+    // Verificação dos tokens validos
     static bool ValidateTokens(int pos, vector<string> tokens)
     {
         int i = 0;
@@ -51,6 +52,7 @@ public:
         return CheckLastString(tokens[tokens.size() - 1]);
     }
 
+    // Verificação da ultima string
     static bool CheckLastString(string label)
     {
         // Falso Para o caso do LABEL < 7 CHARS
@@ -120,19 +122,7 @@ public:
         return false;
     }
 
-    static bool LabelDefinition(vector<string> token, string name)
-    {
-        if (token.size() > 1)
-        {
-            if (token[1] == ":" && name == token[0])
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    static bool SectionAnalises(vector<string> token, bool state)
+    static bool SectioncHECK(vector<string> token)
     {
 
         if ((signed)token.size() == 2)

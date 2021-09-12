@@ -11,9 +11,10 @@ int main(int argc, char const *argv[])
     vector<string> teste;
     teste.push_back("Label");
     teste.push_back(":");
-    teste.push_back("Label");
+    teste.push_back("bac");
     teste.push_back("SPACE0");
-    teste.push_back("SPACE+0");
+    teste.push_back(",");
+    teste.push_back("SPACE+");
     Validation a;
 
     bool base = a.CkeckTokens(teste);
@@ -24,5 +25,8 @@ int main(int argc, char const *argv[])
 
     cout << "DUPLICATES " << base << endl;
 
+    base = a.LabelFunction(teste);
+
+    cout << "LABEL DEFINITION " << base << endl;
     return 0;
 }

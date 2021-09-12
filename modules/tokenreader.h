@@ -32,7 +32,7 @@ public:
                 temp = "";
                 break;
             case ',':
-                AddToken(temp);
+                AddToken(temp, ",");
                 temp = "";
                 break;
             default:
@@ -88,12 +88,11 @@ public:
         tokens.clear();
     }
 
-    void RemoveBack(int n)
+    // Função para remover principalmente as labels
+    void RemoveFront(int n)
     {
         for (int i = 0; i < n; i++)
             tokens.erase(tokens.begin());
-
-        //tokens.erase(tokens.begin() + 1);
     }
 
     string LineWrite(string pc)

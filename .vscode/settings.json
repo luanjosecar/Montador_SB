@@ -4,6 +4,7 @@
         "xstring": "cpp",
         "ostream": "cpp",
         "xlocale": "cpp",
-        "xlocinfo": "cpp"
+        "xlocinfo": "cpp",
+        "vector": "cpp"
     }
 }

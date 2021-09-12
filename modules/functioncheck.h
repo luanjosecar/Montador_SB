@@ -28,11 +28,11 @@ class FunctionCheck
 public:
     //Validation a;
     vector<string> basefunc{"ADD", "SUB", "MULT", "DIV", "JMP", "JMPP", "JMPN", "JMPZ", "COPY", "LOAD", "STORE", "INPUT", "OUTPUT", "STOP"};
-    TS ts;
+    // TS ts;
 
-    void Function(vector<string> &tokens, int &pc, TS ts)
+    void Function(vector<string> &tokens, int &pc)
     {
-        this->ts = ts;
+        // this->ts = ts;
         bool aux = true;
         for (int i = 0; i < (signed)basefunc.size(); i++)
         {
@@ -83,13 +83,14 @@ public:
     {
         if ((signed)tokens.size() == 2)
         {
-            if (!Validation::CheckNumber(tokens[1]))
-            {
-                if (TokenValue(tokens[1]) != "")
-                {
-                    tokens[1] = TokenValue(tokens[1]);
-                }
-            }
+            // Parte substituida para a criação do sistema
+            // if (!Validation::CheckNumber(tokens[1]))
+            // {
+            //     if (TokenValue(tokens[1]) != "")
+            //     {
+            //         tokens[1] = TokenValue(tokens[1]);
+            //     }
+            // }
             return true;
         }
         else
@@ -117,34 +118,32 @@ public:
             {
                 // cout << "  " << tokens[1] << endl;
                 // cout << "  " << tokens[3] << endl;
-                if (!Validation::CheckNumber(tokens[1]))
-                {
-                    if (TokenValue(tokens[1]) != "")
-                    {
-                        tokens[1] = TokenValue(tokens[1]);
-                        return true;
-                    }
-                }
-                if (!Validation::CheckNumber(tokens[3]))
-                {
-                    if (TokenValue(tokens[3]) != "")
-                    {
-                        tokens[3] = TokenValue(tokens[3]);
-                        return true;
-                    }
-                }
+
+                // Substituição direta na função
+
+                // if (!Validation::CheckNumber(tokens[1]) && TokenValue(tokens[1]) != "")
+                // {
+
+                //     tokens[1] = TokenValue(tokens[1]);
+                // }
+                // if (!Validation::CheckNumber(tokens[3]) && TokenValue(tokens[3]) != "")
+                // {
+                //     tokens[3] = TokenValue(tokens[3]);
+                // }
+                tokens.erase(tokens.begin() + 2);
+                return true;
             }
         }
         return false;
     }
 
-    string TokenValue(string name)
-    {
-        for (int i = 0; i < (signed)ts.symbs.size(); i++)
-        {
-            if (name == ts.symbs[i].name && ts.symbs[i].status && !ts.symbs[i].secData)
-                return ts.symbs[i].base;
-        }
-        return "";
-    }
+    // string TokenValue(string name)
+    // {
+    //     for (int i = 0; i < (signed)ts.symbs.size(); i++)
+    //     {
+    //         if (name == ts.symbs[i].name && ts.symbs[i].status && !ts.symbs[i].secData)
+    //             return ts.symbs[i].base;
+    //     }
+    //     return "";
+    // }
 };

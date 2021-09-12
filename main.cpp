@@ -95,6 +95,7 @@ int main(int argc, char const *argv[])
                 for (int i = 0; i < (signed)reader.tokens.size(); i++)
                 {
                     symbs.TokenAdder(reader.tokens[i], i, line, pc, (Validation::LabelFunction(reader.tokens) && i == 0));
+                    symbs.LabelSimpleSearch(reader.tokens, reader.tokens[i], i);
                 }
                 if (Validation::LabelFunction(reader.tokens))
                     reader.RemoveFront(2);

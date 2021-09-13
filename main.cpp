@@ -32,13 +32,14 @@ int main(int argc, char const *argv[])
     fstream newfile;
 
     TokenReader reader;
-    Validation check;
     TS symbs;
     FunctionCheck funcs;
 
     vector<string> writer;
     int line = 0;
     int pc = 0;
+    int line_file = 0;
+    int aux = 0;
     bool sectionText = false;
 
     newfile.open(argv[1], ios::in);
@@ -75,9 +76,15 @@ int main(int argc, char const *argv[])
 
             //--------------------------------------------------
             // Validação dos valores na SECTION DATA *******************************
-            if (Validation::SectionCheck(reader.tokens))
+            if (Validation::SectionCheck(reader.tokens) == 1)
             {
-                sectionText = !sectionText;
+                sectionText = false;
+                reader.ClearTokens();
+                continue;
+            }
+            if (Validation::SectionCheck(reader.tokens) == 2)
+            {
+                sectionText = true;
                 reader.ClearTokens();
                 continue;
             }
@@ -100,13 +107,17 @@ int main(int argc, char const *argv[])
                 }
                 if (Validation::LabelFunction(reader.tokens))
                 {
+                    symbs.CheckTokenCS(reader.tokens);
                     symbs.RoolBack(writer, reader.tokens[0]);
                     reader.RemoveFront(2);
+                    symbs.ConstSpaceFunc(reader.tokens, pc);
                 }
-                writer.push_back(reader.LineWrite(to_string(pc)));
-
+                writer.push_back(reader.LineWrite(to_string(aux)));
+                aux = pc;
                 line++;
             }
+
+            line_file++;
 
             reader.ClearTokens();
         }
@@ -117,6 +128,6 @@ int main(int argc, char const *argv[])
 
     for (int i = 0; i < (signed)writer.size(); i++)
         cout << writer[i] << endl;
-    // symbs.PrintTable();
+    symbs.PrintTable();
     return 0;
 }

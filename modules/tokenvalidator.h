@@ -122,14 +122,16 @@ public:
         return false;
     }
 
-    static bool SectionCheck(vector<string> token)
+    static int SectionCheck(vector<string> token)
     {
 
         if ((signed)token.size() == 2)
         {
-            if (token[0] == "SECTION" && (token[1] == "TEXT" || token[1] == "DATA"))
-                return true;
+            if (token[0] == "SECTION" && token[1] == "TEXT")
+                return 1;
+            if (token[0] == "SECTION" && token[1] == "DATA")
+                return 2;
         }
-        return false;
+        return 0;
     }
 };

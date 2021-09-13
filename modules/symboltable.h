@@ -52,6 +52,19 @@ public:
         }
     }
 
+    void CheckTokenCS(vector<string> tokens)
+    {
+        if (tokens[2] == "CONST")
+        {
+            symbs[CheckTokenValue(tokens[0])].constFunc = true;
+            symbs[CheckTokenValue(tokens[0])].constValue = tokens[3];
+        }
+        else if (SpaceValue(tokens[2]) != -1)
+        {
+            symbs[CheckTokenValue(tokens[0])].constFunc = false;
+            symbs[CheckTokenValue(tokens[0])].constValue = to_string(SpaceValue(tokens[2]));
+        }
+    }
     // Velidação do Label
     bool CheckCaracteristc(string name)
     {
@@ -166,14 +179,14 @@ public:
     // Adiciona os valores de PC para a SectionDATA
     void AddTextData(int pos, vector<string> &writer)
     {
-        int value = pos + 1;
+
         string aux;
         for (int i = 0; i < (signed)symbs.size(); i++)
         {
             if (symbs[i].secData)
             {
                 // cout << symbs[i].constValue << " " << symbs[i].name << atoi(symbs[i].constValue.c_str()) << symbs[i].constFunc << endl;
-                symbs[i].base = to_string(value);
+                symbs[i].base = to_string(pos);
                 symbs[i].status = true;
                 RoolBack(writer, symbs[i].name);
 
@@ -181,18 +194,27 @@ public:
                 {
                     aux = symbs[i].base + " " + symbs[i].constValue;
                     writer.push_back(aux);
-                    value++;
+                    pos++;
                 }
                 else
                 {
                     for (int j = 0; j <= atoi(symbs[i].constValue.c_str()); j++)
                     {
-                        aux = to_string(value) + " XX";
+                        aux = to_string(pos) + " XX";
                         writer.push_back(aux);
-                        value++;
+                        pos++;
                     }
                 }
             }
+        }
+    }
+
+    void ConstSpaceFunc(vector<string> &tokens, int &pc)
+    {
+        if (tokens[0] == "CONST")
+        {
+            tokens.erase(tokens.begin());
+            pc++;
         }
     }
 

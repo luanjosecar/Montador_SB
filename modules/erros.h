@@ -2,52 +2,65 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
-class ErHandler
+class ErrHandler
 {
 public:
-    string message;
+    vector<string> message;
 
-    void PrintError()
-    {
-        cout << "\n"
-             << message;
+    void PrintError(){
+
     };
 
     void MissingRotules(int line)
     {
-        cout << "Missing Rotules to be identified";
+        string msg;
+        msg = "Missing Rotules to be identified in line " + to_string(line);
+        message.push_back(msg);
     };
 
     void DuplicatedRotules(int line)
     {
-        cout << "Rotule already declareted at line " << line;
+        string msg;
+        msg = "Rotule already declareted at line " + line;
+        message.push_back(msg);
     };
 
     void RepetitiveRotules(int line)
     {
-        cout << "Douplicated rotule at line  " << line;
+        string msg;
+        msg = "Douplicated rotule at line  " + line;
+        message.push_back(msg);
     };
 
     void InvalidDirective(int line)
     {
-        cout << "Invalid Directive at Line " << line;
+        string msg;
+        msg = "Invalid Directive at Line " + line;
+        message.push_back(msg);
     };
 
     void InvalidFunc(int line)
     {
-        cout << "Invalid Instruction at line " << line;
+        string msg;
+        msg = "Invalid Instruction at line " + line;
+        message.push_back(msg);
     };
 
     void InvalidStruc(int line)
     {
-        cout << "Invalid Instructions Structure at line " << line;
+        string msg;
+        msg = "Invalid Instructions Structure at line " + line;
+        message.push_back(msg);
     };
 
     void InvalidToken(int line)
     {
-        cout << "Invalid Token at line " << line;
+        string msg;
+        msg = "Invalid Token at line " + line;
+        message.push_back(msg);
     };
 };

@@ -36,6 +36,8 @@ public:
 
         // this->ts = ts;
         bool aux = true;
+        if (tokens.size() == 2 && tokens[1] == ":")
+            return;
         if (Validation::LabelFunction(tokens))
             base = 2;
         else
@@ -82,7 +84,6 @@ public:
         }
         if (aux == false)
         {
-            //cout << "\nFunção não definida ou com erro" << tokens[0];
         }
     }
 
@@ -90,14 +91,6 @@ public:
     {
         if ((signed)tokens.size() == (2 + base))
         {
-            // Parte substituida para a criação do sistema
-            // if (!Validation::CheckNumber(tokens[1]))
-            // {
-            //     if (TokenValue(tokens[1]) != "")
-            //     {
-            //         tokens[1] = TokenValue(tokens[1]);
-            //     }
-            // }
             return true;
         }
         else

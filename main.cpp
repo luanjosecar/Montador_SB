@@ -5,6 +5,7 @@
 #include "modules\symboltable.h"
 #include "modules\tokenreader.h"
 #include "modules\tokenvalidator.h"
+#include "modules\erros.h"
 
 #include "modules\functioncheck.h"
 using namespace std;
@@ -34,6 +35,7 @@ int main(int argc, char const *argv[])
     TokenReader reader;
     TS symbs;
     FunctionCheck funcs;
+    ErrHandler err;
 
     vector<string> writer;
     int line = 0;
@@ -51,7 +53,7 @@ int main(int argc, char const *argv[])
         {
             std::istringstream ss(tp);
             reader.GenerateTokens(tp);
-            if (reader.tokens[0] == "")
+            if (reader.tokens[0] == "" || reader.tokens.size() == 0)
             {
                 reader.ClearTokens();
                 continue;
@@ -60,23 +62,15 @@ int main(int argc, char const *argv[])
             // ----------------------------------------------- primeiros testes
 
             // Análise da estrutura lexa do sistema
-            if (Validation::CkeckTokens(reader.tokens))
+            if (!Validation::CkeckTokens(reader.tokens))
             {
-                //cout << "   -- L1 OK";
-            }
-            else
-            {
-                cout << "  -- erro L1 " << reader.tokens.size() << endl;
+                err.InvalidStruc(line_file);
             }
 
             // Analise sintática 1
-            if (!(Validation::CheckDuplicates(reader.tokens)))
+            if ((Validation::CheckDuplicates(reader.tokens)))
             {
-                //cout << "   -- S1 OK";
-            }
-            else
-            {
-                cout << "  -- erro S1 " << reader.tokens.size() << endl;
+                err.DuplicatedRotules(line_file);
             }
 
             //--------------------------------------------------
@@ -111,13 +105,22 @@ int main(int argc, char const *argv[])
                     symbs.TokenAdder(reader.tokens[i], i, line, pc, (Validation::LabelFunction(reader.tokens) && i == 0));
                     symbs.LabelSimpleSearch(reader.tokens, reader.tokens[i], i);
                 }
+
                 if (Validation::LabelFunction(reader.tokens))
                 {
+
                     symbs.CheckTokenCS(reader.tokens);
+                    reader.PrintTokens();
                     symbs.RoolBack(writer, reader.tokens[0]);
+                    if (Validation::LabelOnly(reader.tokens))
+                    {
+                        reader.ClearTokens();
+                        continue;
+                    }
                     reader.RemoveFront(2);
                     symbs.ConstSpaceFunc(reader.tokens, pc);
                 }
+
                 writer.push_back(reader.LineWrite(to_string(aux)));
                 aux = pc;
                 line++;

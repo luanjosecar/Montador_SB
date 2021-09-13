@@ -134,4 +134,9 @@ public:
         }
         return 0;
     }
+
+    static bool LabelOnly(vector<string> token)
+    {
+        return (token.size() == 2 && CheckString(token[0]) && token[1] == ":");
+    }
 };

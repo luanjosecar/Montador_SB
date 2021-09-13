@@ -54,6 +54,8 @@ public:
 
     void CheckTokenCS(vector<string> tokens)
     {
+        if (tokens.size() == 2 && tokens[1] == ":")
+            return;
         if (tokens[2] == "CONST")
         {
             symbs[CheckTokenValue(tokens[0])].constFunc = true;

@@ -13,6 +13,11 @@ public:
 
     void GenerateTokens(string s)
     {
+        if (s == "")
+        {
+            tokens.push_back("");
+            return;
+        }
         string temp = "";
         for (int i = 0; i < (signed)s.length(); ++i)
         {
@@ -106,5 +111,11 @@ public:
             aux = aux + tokens[i] + " ";
         }
         return aux;
+    }
+
+    void PrintWriter(vector<string> writer)
+    {
+        for (int i = 0; i < (signed)writer.size(); i++)
+            cout << writer[i] << endl;
     }
 };

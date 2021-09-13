@@ -51,6 +51,11 @@ int main(int argc, char const *argv[])
         {
             std::istringstream ss(tp);
             reader.GenerateTokens(tp);
+            if (reader.tokens[0] == "")
+            {
+                reader.ClearTokens();
+                continue;
+            }
 
             // ----------------------------------------------- primeiros testes
 
@@ -97,6 +102,7 @@ int main(int argc, char const *argv[])
 
             else
             {
+
                 // Roda a analise de funções
                 funcs.Function(reader.tokens, pc);
                 // Verifica se o item em análise é uma Label
@@ -115,19 +121,18 @@ int main(int argc, char const *argv[])
                 writer.push_back(reader.LineWrite(to_string(aux)));
                 aux = pc;
                 line++;
+                // reader.PrintTokens();
             }
 
             line_file++;
 
             reader.ClearTokens();
         }
-        symbs.AddTextData(pc, writer);
 
+        symbs.AddTextData(pc, writer);
         newfile.close(); //close the file object.
     }
-
-    for (int i = 0; i < (signed)writer.size(); i++)
-        cout << writer[i] << endl;
-    symbs.PrintTable();
+    reader.PrintWriter(writer);
+    // symbs.PrintTable();
     return 0;
 }

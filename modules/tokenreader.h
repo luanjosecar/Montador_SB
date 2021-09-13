@@ -99,6 +99,8 @@ public:
     string LineWrite(string pc)
     {
         string aux = pc + " ";
+        if (aux == " ")
+            aux = "";
         for (int i = 0; i < (signed)tokens.size(); i++)
         {
             aux = aux + tokens[i] + " ";

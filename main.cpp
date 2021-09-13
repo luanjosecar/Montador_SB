@@ -2,9 +2,10 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include "modules\symboltable.h"
 #include "modules\tokenreader.h"
 #include "modules\tokenvalidator.h"
-#include "modules\symboltable.h"
+
 #include "modules\functioncheck.h"
 using namespace std;
 
@@ -35,7 +36,7 @@ int main(int argc, char const *argv[])
     TS symbs;
     FunctionCheck funcs;
 
-    vector<string> write;
+    vector<string> writer;
     int line = 0;
     int pc = 0;
     bool sectionText = false;
@@ -98,25 +99,24 @@ int main(int argc, char const *argv[])
                     symbs.LabelSimpleSearch(reader.tokens, reader.tokens[i], i);
                 }
                 if (Validation::LabelFunction(reader.tokens))
+                {
+                    symbs.RoolBack(writer, reader.tokens[0]);
                     reader.RemoveFront(2);
+                }
+                writer.push_back(reader.LineWrite(to_string(pc)));
 
-                reader.PrintTokens();
+                line++;
             }
-
-            line++;
 
             reader.ClearTokens();
         }
-
-        // // cout << endl;
-
-        // //cout << tp << "\n";
+        symbs.AddTextData(pc, writer);
 
         newfile.close(); //close the file object.
     }
 
-    // for (int i = 0; i < (signed)write.size(); i++)
-    // cout << write[i] << endl;
+    for (int i = 0; i < (signed)writer.size(); i++)
+        cout << writer[i] << endl;
     // symbs.PrintTable();
     return 0;
 }

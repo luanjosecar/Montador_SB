@@ -38,7 +38,7 @@ public:
         if (!symbs[CheckTokenValue(name)].status)
             symbs[CheckTokenValue(name)].UpdateSymbolValue(line, pos, value, status);
     }
-
+    // Modelo de Adicionar as Labels
     void TokenAdder(string name, int pos, int line, int value, int status)
     {
 
@@ -52,6 +52,7 @@ public:
         }
     }
 
+    // Velidação do Label
     bool CheckCaracteristc(string name)
     {
         return CheckSpecial(name) || ValidFunction(name);
@@ -166,18 +167,31 @@ public:
     void AddTextData(int pos, vector<string> &writer)
     {
         int value = pos + 1;
+        string aux;
         for (int i = 0; i < (signed)symbs.size(); i++)
         {
             if (symbs[i].secData)
             {
+                // cout << symbs[i].constValue << " " << symbs[i].name << atoi(symbs[i].constValue.c_str()) << symbs[i].constFunc << endl;
                 symbs[i].base = to_string(value);
+                symbs[i].status = true;
                 RoolBack(writer, symbs[i].name);
 
-                // Coreção do value para Space++
                 if (symbs[i].constFunc)
-                    value = value + atoi(symbs[i].constValue.c_str());
-                else
+                {
+                    aux = symbs[i].base + " " + symbs[i].constValue;
+                    writer.push_back(aux);
                     value++;
+                }
+                else
+                {
+                    for (int j = 0; j <= atoi(symbs[i].constValue.c_str()); j++)
+                    {
+                        aux = to_string(value) + " XX";
+                        writer.push_back(aux);
+                        value++;
+                    }
+                }
             }
         }
     }
@@ -185,14 +199,28 @@ public:
     // -------------------------------------------------------------------
     void RoolBack(vector<string> &writer, string name)
     {
+
+        TokenReader aux;
         if (CheckToken(name))
         {
             int temp = CheckTokenValue(name);
+
             for (int i = 0; i < (signed)symbs[temp].positions.size(); i++)
             {
-                // TokenReader aux;
-                // aux.GenerateTokens(writer[symbs[temp].lines[i]]);
-                // aux.tokens[symbs[temp].positions[i]] = symbs[temp].base;
+
+                if (symbs[temp].positions[i] > 0)
+                {
+                    aux.GenerateTokens(writer[symbs[temp].lines[i]]);
+                    // cout << symbs[temp].name << " " << symbs[temp].positions[i] << " " << aux.tokens.size() << endl;
+                    for (int j = 0; j < (signed)aux.tokens.size(); j++)
+                    {
+                        if (aux.tokens[j] == symbs[temp].name)
+                            aux.tokens[j] = symbs[temp].base;
+                    }
+                    //aux.tokens[symbs[temp].positions[i] + 1] = symbs[temp].base;
+                    writer[symbs[temp].lines[i]] = aux.LineWrite("");
+                    aux.ClearTokens();
+                }
             }
         }
     }

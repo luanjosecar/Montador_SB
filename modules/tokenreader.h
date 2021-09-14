@@ -123,7 +123,7 @@ public:
     {
         fstream newfile;
         filename.resize(filename.size() - 3);
-        filename = filename + "bin";
+        filename = filename + "obj";
         newfile.open(filename, ios::out);
         if (newfile.is_open())
         {
@@ -140,7 +140,7 @@ public:
         fstream newfile;
         TokenReader a;
         filename.resize(filename.size() - 3);
-        filename = filename + "bin";
+        filename = filename + "obj";
         newfile.open(filename, ios::out);
         if (newfile.is_open())
         {

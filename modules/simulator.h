@@ -46,7 +46,7 @@ public:
         for (int i = 0; i < (signed)code.size(); i++)
         {
 
-            Simulate(code[i].tokens);
+            Simulate(code[i].tokens, i);
         }
     }
 
@@ -129,7 +129,7 @@ public:
         }
     }
 
-    void Simulate(vector<string> tp)
+    void Simulate(vector<string> tp, int &i)
     { // this->ts = ts;
 
         if (tp.size() == 2)
@@ -167,7 +167,7 @@ public:
             case JMPP:
             case JMPN:
             case JMPZ:
-                JumpFunc(tp);
+                i = JumpFunc(tp, i);
                 break;
             case LOAD:
                 PrintData("LOAD", tp[0]);
@@ -234,32 +234,33 @@ public:
         }
     }
 
-    void JumpFunc(vector<string> token)
+    int JumpFunc(vector<string> token, int i)
     {
 
         if (atoi(token[1].c_str()) == JMP)
         {
 
             PrintData("JMP", token[0]);
-            Simulate(code[CheckPC(token[2])].tokens);
+            return CheckPC(token[2]);
         }
         if (atoi(token[1].c_str()) == JMPP && ADC > 0)
         {
             //Realiza Jump
 
             PrintData("JMPP", token[0]);
-            Simulate(code[CheckPC(token[2])].tokens);
+            return CheckPC(token[2]);
         }
         if (atoi(token[1].c_str()) == JMPN && ADC < 0)
         {
             PrintData("JMPN", token[0]);
-            Simulate(code[CheckPC(token[2])].tokens);
+            return CheckPC(token[2]);
         }
         if (atoi(token[1].c_str()) == JMPZ && ADC == 0)
         {
             PrintData("JMPZ", token[0]);
-            Simulate(code[CheckPC(token[2])].tokens);
+            return CheckPC(token[2]);
         }
+        return i;
     }
 
     void InputFunc(vector<string> token)
@@ -293,7 +294,7 @@ public:
         for (int i = 0; i < (signed)code.size(); i++)
         {
             if (s == code[i].tokens[0])
-                return i;
+                return i - 1;
         }
         return atoi(s.c_str());
     }

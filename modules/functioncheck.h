@@ -10,8 +10,8 @@ enum Func
     MULT,
     DIV,
     JMP,
-    JMPP,
     JMPN,
+    JMPP,
     JMPZ,
     COPY,
     LOAD,
@@ -26,7 +26,7 @@ class FunctionCheck
 {
 public:
     //Validation a;
-    vector<string> basefunc{"ADD", "SUB", "MULT", "DIV", "JMP", "JMPP", "JMPN", "JMPZ", "COPY", "LOAD", "STORE", "INPUT", "OUTPUT", "STOP"};
+    vector<string> basefunc{"ADD", "SUB", "MULT", "DIV", "JMP", "JMPN", "JMPP", "JMPZ", "COPY", "LOAD", "STORE", "INPUT", "OUTPUT", "STOP"};
     //ErrHandler err;
     int base = 0;
 
@@ -76,7 +76,7 @@ public:
                     break;
                 case STOP:
                     aux = FuncTypeB(tokens);
-                    pc = pc + 2;
+                    pc = pc + 1;
                     if (!aux)
                         base = -1;
                     return aux;

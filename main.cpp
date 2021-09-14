@@ -11,6 +11,8 @@
 
 using namespace std;
 
+bool PRINTER = false;
+
 bool FilenameValidation(string s)
 {
     string temp = "";
@@ -155,12 +157,12 @@ int main(int argc, char const *argv[])
                 {
                     if (Validation::CheckLastString(reader.tokens[i])) // Verifica se a Estrutura da Label tem um +
                     {
-                        symbs.TokenAdder(Validation::CheckPlusLabelToken(reader.tokens[i]), i, line, pc, (Validation::LabelFunction(reader.tokens) && i == 0));
+                        symbs.TokenAdder(Validation::CheckPlusLabelToken(reader.tokens[i]), i, line, aux, (Validation::LabelFunction(reader.tokens) && i == 0));
                         symbs.LabelSimpleSearch(reader.tokens, Validation::CheckPlusLabelToken(reader.tokens[i]), i);
                     }
                     else
                     {
-                        symbs.TokenAdder(reader.tokens[i], i, line, pc, (Validation::LabelFunction(reader.tokens) && i == 0));
+                        symbs.TokenAdder(reader.tokens[i], i, line, aux, (Validation::LabelFunction(reader.tokens) && i == 0));
                         symbs.LabelSimpleSearch(reader.tokens, reader.tokens[i], i);
                     }
                 }
@@ -201,7 +203,12 @@ int main(int argc, char const *argv[])
     if (err.message.size() > 0)
         err.PrintErros();
     else
-        reader.WriteFile(writer, argv[1]);
+    {
+        if (PRINTER)
+            reader.WriteFile(writer, argv[1]);
+        else
+            reader.Writer(writer, argv[1]);
+    }
     // symbs.PrintTable();
     return 0;
 }

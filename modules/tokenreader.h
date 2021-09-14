@@ -3,7 +3,7 @@
 #include <string>
 #include <regex>
 #pragma once
-#include "symboltable.h"
+//#include "symboltable.h"
 using namespace std;
 
 class TokenReader
@@ -130,6 +130,32 @@ public:
             for (int i = 0; i < (signed)writer.size(); i++)
             {
                 newfile << writer[i] << endl;
+            }
+            newfile.close();
+        }
+    }
+
+    void Writer(vector<string> writer, string filename)
+    {
+        fstream newfile;
+        TokenReader a;
+        filename.resize(filename.size() - 3);
+        filename = filename + "bin";
+        newfile.open(filename, ios::out);
+        if (newfile.is_open())
+        {
+            for (int i = 0; i < (signed)writer.size(); i++)
+            {
+                a.GenerateTokens(writer[i]);
+
+                for (int j = 0; j < (signed)a.tokens.size(); j++)
+                {
+                    if (j != 0)
+                    {
+                        newfile << a.tokens[j] << " ";
+                    }
+                }
+                a.ClearTokens();
             }
             newfile.close();
         }

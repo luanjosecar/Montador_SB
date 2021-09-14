@@ -233,7 +233,7 @@ public:
         if (tokens[0] == "SPACE")
         {
             tokens.erase(tokens.begin());
-            tokens.push_back("X");
+            tokens.push_back("00");
             pc++;
         }
 

@@ -2,12 +2,13 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+
 #include "modules\symboltable.h"
 #include "modules\tokenreader.h"
 #include "modules\tokenvalidator.h"
 #include "modules\erros.h"
-
 #include "modules\functioncheck.h"
+
 using namespace std;
 
 bool FilenameValidation(string s)

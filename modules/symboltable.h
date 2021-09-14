@@ -204,7 +204,7 @@ public:
 
                 if (symbs[i].constFunc)
                 {
-                    aux = symbs[i].base + " " + symbs[i].constValue;
+                    aux = symbs[i].base + " 0" + symbs[i].constValue;
                     writer.push_back(aux);
                     pos++;
                 }
@@ -227,6 +227,7 @@ public:
         if (tokens[0] == "CONST")
         {
             tokens.erase(tokens.begin());
+            tokens[0] = "0" + tokens[0];
             pc++;
         }
         if (tokens[0] == "SPACE")
@@ -264,7 +265,7 @@ public:
                 return;
             symbs[CheckTokenValue(label)].constFunc = true;
             symbs[CheckTokenValue(label)].constValue = tokens[1];
-            writer.push_back(to_string(pc) + " " + tokens[1]);
+            writer.push_back(to_string(pc) + " 0" + tokens[1]);
             pc++;
             return;
         }

@@ -43,6 +43,7 @@ int main(int argc, char const *argv[])
     int line_file = 0;
     int aux = 0;
     bool sectionText = false;
+    string labelaux = "";
 
     newfile.open(argv[1], ios::in);
 
@@ -90,41 +91,65 @@ int main(int argc, char const *argv[])
 
             if (sectionText)
             {
+                if (Validation::LabelOnly(reader.tokens))
+                {
+                    labelaux = reader.tokens[0];
+                    reader.ClearTokens();
+                    continue;
+                }
+                if (labelaux != "")
+                {
+                    reader.tokens.insert(reader.tokens.begin(), ":");
+                    reader.tokens.insert(reader.tokens.begin(), labelaux);
+                    labelaux = "";
+                }
                 symbs.SectionValues(reader.tokens);
             }
             //***********************************************************************
-
             else
             {
 
+                // Caso para o Label Tenha sido declara na função anterior
+                if (labelaux != "" && (reader.tokens[0] == "CONST" || Validation::CheckLastString(reader.tokens[0]) || reader.tokens[0] == "SPACE"))
+                {
+                    cout << "H!" << endl;
+                    symbs.RoolLabel(reader.tokens, labelaux, pc, writer);
+                    labelaux = "";
+                    reader.ClearTokens();
+                    continue;
+                }
                 // Roda a analise de funções
                 funcs.Function(reader.tokens, pc);
                 // Verifica se o item em análise é uma Label
                 for (int i = 0; i < (signed)reader.tokens.size(); i++)
                 {
+
                     symbs.TokenAdder(reader.tokens[i], i, line, pc, (Validation::LabelFunction(reader.tokens) && i == 0));
                     symbs.LabelSimpleSearch(reader.tokens, reader.tokens[i], i);
                 }
-
+                // Caso de analise para a Label definida
                 if (Validation::LabelFunction(reader.tokens))
                 {
 
                     symbs.CheckTokenCS(reader.tokens);
-                    reader.PrintTokens();
                     symbs.RoolBack(writer, reader.tokens[0]);
+
+                    // Label sendo a unica função
                     if (Validation::LabelOnly(reader.tokens))
                     {
+
                         reader.ClearTokens();
+                        labelaux = reader.tokens[0];
                         continue;
                     }
+
                     reader.RemoveFront(2);
-                    symbs.ConstSpaceFunc(reader.tokens, pc);
+                    symbs.ConstSpaceFunc(reader.tokens, pc, writer, aux);
                 }
 
                 writer.push_back(reader.LineWrite(to_string(aux)));
                 aux = pc;
                 line++;
-                // reader.PrintTokens();
             }
 
             line_file++;

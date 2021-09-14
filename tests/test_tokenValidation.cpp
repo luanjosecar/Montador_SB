@@ -9,8 +9,9 @@ using namespace std;
 int main(int argc, char const *argv[])
 {
     vector<string> teste;
-    teste.push_back("SECTION");
-    teste.push_back("TEXT");
+
+    teste.push_back("SPACE+52");
+    // teste.push_back("TEXT");
     Validation a;
 
     bool base = a.CkeckTokens(teste);
@@ -24,5 +25,10 @@ int main(int argc, char const *argv[])
     base = a.LabelFunction(teste);
 
     cout << "LABEL DEFINITION " << base << endl;
+
+    base = a.CheckLastString("SPACE+52");
+
+    cout << "LABEL WITH PLUS " << base << endl;
+
     return 0;
 }

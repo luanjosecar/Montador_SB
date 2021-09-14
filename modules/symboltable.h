@@ -211,12 +211,70 @@ public:
         }
     }
 
-    void ConstSpaceFunc(vector<string> &tokens, int &pc)
+    void ConstSpaceFunc(vector<string> &tokens, int &pc, vector<string> &writer, int &aux1)
     {
+        string aux;
         if (tokens[0] == "CONST")
         {
             tokens.erase(tokens.begin());
             pc++;
+        }
+        if (tokens[0] == "SPACE")
+        {
+            tokens.erase(tokens.begin());
+            tokens.push_back("X");
+            pc++;
+        }
+
+        if (Validation::CheckLastString(tokens[0]))
+        {
+
+            for (int i = 0; i < atoi(Validation::CheckPlusLabelInt(tokens[0]).c_str()) - 1; i++)
+            {
+                aux = to_string(aux1) + " X";
+                writer.push_back(aux);
+                aux1++;
+                pc++;
+            }
+            tokens[0] = "X";
+            pc++;
+        }
+    }
+
+    void RoolLabel(vector<string> &tokens, string label, int &pc, vector<string> &writer)
+    {
+
+        string aux;
+        if (label == "")
+            return;
+        if (tokens[0] == "CONST")
+        {
+            symbs[CheckTokenValue(label)].constFunc = true;
+            symbs[CheckTokenValue(label)].constValue = tokens[1];
+            writer.push_back(to_string(pc) + " " + tokens[1]);
+            pc++;
+            return;
+        }
+        if (tokens[0] == "SPACE")
+        {
+            tokens.erase(tokens.begin());
+            symbs[CheckTokenValue(label)].constFunc = false;
+            writer.push_back(to_string(pc) + " X");
+            pc++;
+            return;
+        }
+        if (Validation::CheckLastString(tokens[0]))
+        {
+            symbs[CheckTokenValue(label)].constFunc = false;
+            symbs[CheckTokenValue(label)].constValue = Validation::CheckPlusLabelInt(tokens[0]);
+            for (int i = 0; i < atoi(Validation::CheckPlusLabelInt(tokens[0]).c_str()); i++)
+            {
+                aux = to_string(pc) + " X";
+                writer.push_back(aux);
+                pc++;
+            }
+            return;
+            // Falta adicionar o número de loops do sistema
         }
     }
 

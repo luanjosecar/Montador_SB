@@ -39,39 +39,89 @@ public:
         int i = 0;
         do
         {
-            if (!(CheckNumber(tokens[i]) || CheckString(tokens[i])))
+            // cout << CheckNumber(tokens[i]) << CheckString(tokens[i]) << CheckLastString(tokens[i]) << endl;
+
+            if ((CheckNumber(tokens[i]) || (CheckString(tokens[i]) || CheckLastString(tokens[i]))))
             {
-                cout << tokens[i] << endl;
+                return true;
                 break;
             }
             i++;
         } while (i < (signed)tokens.size());
-
-        if (i == ((signed)tokens.size()))
-            return true;
-        return CheckLastString(tokens[tokens.size() - 1]);
+        return false;
     }
 
     // Verificação da ultima string
     static bool CheckLastString(string label)
     {
         // Falso Para o caso do LABEL < 7 CHARS
-        if (label.size() < 6)
-            return false;
-
-        char aux2;
         string temp = "";
-        const char *aux = label.c_str();
-        if (strncmp(aux, "SPACE+", 10) > 0)
+        string aux1 = "";
+        bool aux2 = false;
+        for (int i = 0; i < (signed)label.length(); ++i)
         {
-            for (int i = 6; i < (signed)label.length(); i++)
+            char up = label[i];
+            if (up == '+')
             {
-                aux2 = label[i];
-                temp.push_back(aux2);
+                aux2 = true;
+                continue;
             }
+            if (aux2)
+                aux1.push_back(up);
+            else
+                temp.push_back(up);
         }
-        //cout << temp << " " << aux << " " << strncmp(aux, "SPACE+", 10) << " " << label.length() << endl;
-        return CheckNumber(temp);
+        if (aux1 == "")
+            return false;
+        if (CheckNumber(aux1) && CheckString(temp))
+            return true;
+        return false;
+    }
+
+    static string CheckPlusLabelToken(string label)
+    {
+        string temp = "";
+        string aux1 = "";
+        bool aux2 = false;
+        for (int i = 0; i < (signed)label.length(); ++i)
+        {
+            char up = label[i];
+            if (up == '+')
+            {
+                aux2 = true;
+                continue;
+            }
+            if (aux2)
+                aux1.push_back(up);
+            else
+                temp.push_back(up);
+        }
+        if (CheckNumber(aux1) && CheckString(temp))
+            return temp;
+        return "";
+    }
+
+    static string CheckPlusLabelInt(string label)
+    {
+        string temp = "";
+        string aux1 = "";
+        bool aux2 = false;
+        for (int i = 0; i < (signed)label.length(); ++i)
+        {
+            char up = label[i];
+            if (up == '+')
+            {
+                aux2 = true;
+                continue;
+            }
+            if (aux2)
+                aux1.push_back(up);
+            else
+                temp.push_back(up);
+        }
+        if (CheckNumber(aux1) && CheckString(temp))
+            return aux1;
+        return "";
     }
 
     // Busca por Números

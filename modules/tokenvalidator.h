@@ -189,4 +189,11 @@ public:
     {
         return (token.size() == 2 && CheckString(token[0]) && token[1] == ":");
     }
+
+    static bool LabelConstSpaceSize(vector<string> tokens)
+    {
+        if (tokens[0] == "CONST")
+            return (tokens.size() == 2);
+        return (tokens.size() == 1);
+    }
 };

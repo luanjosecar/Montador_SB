@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 #pragma once
-#include "symboltable.h"
 
 enum Func
 {
@@ -28,16 +27,16 @@ class FunctionCheck
 public:
     //Validation a;
     vector<string> basefunc{"ADD", "SUB", "MULT", "DIV", "JMP", "JMPP", "JMPN", "JMPZ", "COPY", "LOAD", "STORE", "INPUT", "OUTPUT", "STOP"};
-    // TS ts;
+    //ErrHandler err;
     int base = 0;
 
-    void Function(vector<string> &tokens, int &pc)
+    bool Function(vector<string> &tokens, int &pc)
     {
 
         // this->ts = ts;
         bool aux = true;
         if (tokens.size() == 2 && tokens[1] == ":")
-            return;
+            return true;
         if (Validation::LabelFunction(tokens))
             base = 2;
         else
@@ -60,33 +59,44 @@ public:
                 case JMPZ:
                 case LOAD:
                 case STORE:
+                case OUTPUT:
+                case INPUT:
                     aux = FuncTypeA(tokens);
                     pc = pc + 2;
+                    if (!aux)
+                        base = -1;
+                    return aux;
                     break;
                 case COPY:
                     aux = FuncTypeC(tokens);
                     pc = pc + 3;
-                    break;
-                case INPUT:
-                case OUTPUT:
-                    aux = FuncTypeB(tokens);
-                    pc = pc + 2;
+                    if (!aux)
+                        base = -1;
+                    return aux;
                     break;
                 case STOP:
-                    pc++;
+                    aux = FuncTypeB(tokens);
+                    pc = pc + 2;
+                    if (!aux)
+                        base = -1;
+                    return aux;
                     break;
                 default:
-                    aux = false;
+                    base = -2;
+                    return false;
                     // Erro função não encontrada
                     break;
                 }
             }
+            if (tokens[base] == "SPACE" || tokens[base] == "CONST" || Validation::CheckLastString(tokens[base]))
+            {
+                return true;
+            }
         }
-        if (aux == false)
-        {
-        }
+        base = 0;
+        return false;
     }
-
+    // Verificação de funções de 2 elementos
     bool FuncTypeA(vector<string> &tokens)
     {
         if ((signed)tokens.size() == (2 + base))
@@ -98,7 +108,7 @@ public:
             return false;
         }
     }
-
+    // Verificação de funções com 1 elemento
     bool FuncTypeB(vector<string> &tokens)
     {
         if ((signed)tokens.size() == (1 + base))
@@ -108,42 +118,18 @@ public:
         else
             return false;
     }
-
+    // Verificação de funções com 3 elementos
     bool FuncTypeC(vector<string> &tokens)
     {
-        // cout << "  " << tokens[0] << endl;
         if ((signed)tokens.size() == (4 + base))
         {
             if (tokens[2 + base] == ",")
             {
-                // cout << "  " << tokens[1] << endl;
-                // cout << "  " << tokens[3] << endl;
-
-                // Substituição direta na função
-
-                // if (!Validation::CheckNumber(tokens[1]) && TokenValue(tokens[1]) != "")
-                // {
-
-                //     tokens[1] = TokenValue(tokens[1]);
-                // }
-                // if (!Validation::CheckNumber(tokens[3]) && TokenValue(tokens[3]) != "")
-                // {
-                //     tokens[3] = TokenValue(tokens[3]);
-                // }
                 tokens.erase(tokens.begin() + 2 + base);
                 return true;
             }
         }
         return false;
     }
-
-    // string TokenValue(string name)
-    // {
-    //     for (int i = 0; i < (signed)ts.symbs.size(); i++)
-    //     {
-    //         if (name == ts.symbs[i].name && ts.symbs[i].status && !ts.symbs[i].secData)
-    //             return ts.symbs[i].base;
-    //     }
-    //     return "";
-    // }
+    // Verificação se é const ou SPACE
 };

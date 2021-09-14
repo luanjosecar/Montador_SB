@@ -171,10 +171,20 @@ public:
     void LabelSimpleSearch(vector<string> &token, string name, int pos)
     {
         int aux;
+        string base;
         aux = CheckTokenValue(name);
+
         if (aux >= 0 && pos > 0 && symbs[aux].status)
         {
-            token[pos] = symbs[aux].base;
+            if (Validation::CheckLastString(token[pos]))
+            {
+                base = to_string(atoi(symbs[aux].base.c_str()) + atoi(Validation::CheckPlusLabelInt(token[pos]).c_str()));
+            }
+            else
+            {
+                base = symbs[aux].base;
+            }
+            token[pos] = base;
         }
     }
 
@@ -202,7 +212,7 @@ public:
                 {
                     for (int j = 0; j <= atoi(symbs[i].constValue.c_str()); j++)
                     {
-                        aux = to_string(pos) + " XX";
+                        aux = to_string(pos) + " 00";
                         writer.push_back(aux);
                         pos++;
                     }
@@ -231,12 +241,12 @@ public:
 
             for (int i = 0; i < atoi(Validation::CheckPlusLabelInt(tokens[0]).c_str()) - 1; i++)
             {
-                aux = to_string(aux1) + " X";
+                aux = to_string(aux1) + " 00";
                 writer.push_back(aux);
                 aux1++;
                 pc++;
             }
-            tokens[0] = "X";
+            tokens[0] = "00";
             pc++;
         }
     }
@@ -249,6 +259,9 @@ public:
             return;
         if (tokens[0] == "CONST")
         {
+            // Erro neste instante de tamanho
+            if (tokens.size() < 2)
+                return;
             symbs[CheckTokenValue(label)].constFunc = true;
             symbs[CheckTokenValue(label)].constValue = tokens[1];
             writer.push_back(to_string(pc) + " " + tokens[1]);
@@ -259,7 +272,7 @@ public:
         {
             tokens.erase(tokens.begin());
             symbs[CheckTokenValue(label)].constFunc = false;
-            writer.push_back(to_string(pc) + " X");
+            writer.push_back(to_string(pc) + " 00");
             pc++;
             return;
         }
@@ -269,7 +282,7 @@ public:
             symbs[CheckTokenValue(label)].constValue = Validation::CheckPlusLabelInt(tokens[0]);
             for (int i = 0; i < atoi(Validation::CheckPlusLabelInt(tokens[0]).c_str()); i++)
             {
-                aux = to_string(pc) + " X";
+                aux = to_string(pc) + " 00";
                 writer.push_back(aux);
                 pc++;
             }
@@ -283,6 +296,8 @@ public:
     {
 
         TokenReader aux;
+        string base = "";
+        string numb = "";
         if (CheckToken(name))
         {
             int temp = CheckTokenValue(name);
@@ -293,16 +308,28 @@ public:
                 if (symbs[temp].positions[i] > 0)
                 {
                     aux.GenerateTokens(writer[symbs[temp].lines[i]]);
-
                     // cout << symbs[temp].name << " " << symbs[temp].positions[i] << " " << aux.tokens.size() << endl;
                     for (int j = 0; j < (signed)aux.tokens.size(); j++)
                     {
-                        if (aux.tokens[j] == symbs[temp].name)
+                        if (Validation::CheckLastString(aux.tokens[j]))
                         {
                             if (pos != 0)
-                                aux.tokens[j] = to_string(pos);
+                                numb = to_string(pos + atoi(Validation::CheckPlusLabelInt(aux.tokens[j]).c_str()));
                             else
-                                aux.tokens[j] = symbs[temp].base;
+                                numb = to_string(atoi(symbs[temp].base.c_str()) + atoi(Validation::CheckPlusLabelInt(aux.tokens[j]).c_str()));
+                            base = Validation::CheckPlusLabelToken(aux.tokens[j]);
+                        }
+                        else
+                        {
+                            if (pos != 0)
+                                numb = to_string(pos);
+                            else
+                                numb = symbs[temp].base;
+                            base = aux.tokens[j];
+                        }
+                        if (base == symbs[temp].name)
+                        {
+                            aux.tokens[j] = numb;
                         }
                     }
                     //aux.tokens[symbs[temp].positions[i] + 1] = symbs[temp].base;
@@ -338,6 +365,19 @@ public:
                 cout << symbs[i].value[j] << " ";
             }
             cout << "\n";
+        }
+    }
+
+    void NonDef(vector<string> &message)
+    {
+        string aux;
+        for (int i = 0; i < (signed)symbs.size(); i++)
+        {
+            if (symbs[i].status == false)
+            {
+                aux = "Erro Semântico - Declaração de rótulos ausentes : " + symbs[i].name;
+                message.push_back(aux);
+            }
         }
     }
 };

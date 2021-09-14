@@ -10,26 +10,38 @@
 #include "modules\functioncheck.h"
 using namespace std;
 
-void WriteFile(string s)
+bool FilenameValidation(string s)
 {
-    fstream newfile;
-    newfile.open("file.asm", ios::out);
-    if (newfile.is_open())
+    string temp = "";
+    string aux1 = "";
+    bool aux2 = false;
+    for (int i = 0; i < (signed)s.length(); ++i)
     {
-        newfile << s << "\n";
-        newfile.close();
+        char up = s[i];
+        if (up == '.')
+        {
+            aux2 = true;
+            continue;
+        }
+        if (aux2)
+            aux1.push_back(up);
+        else
+            temp.push_back(up);
     }
+    if (!temp.empty() && aux1 == "asm")
+        return true;
+    return false;
 }
-
-/*
-Itens que estão faltando
-Fazer percorrer a tabela de penências das variáveis toda vez que ela for achada
-Fazer a transformação de dados para o section data e section text
-Escrever o código em um arquivo de mesmo nome que o de entrada
-*/
 
 int main(int argc, char const *argv[])
 {
+
+    if (!FilenameValidation(argv[1]))
+    {
+        cout << "Nome do arquivo Invalido por favor confirme a extensão " << endl;
+        return 0;
+    }
+
     fstream newfile;
 
     TokenReader reader;
@@ -52,6 +64,7 @@ int main(int argc, char const *argv[])
         string tp;
         while (getline(newfile, tp))
         {
+            line_file++;
             std::istringstream ss(tp);
             reader.GenerateTokens(tp);
             if (reader.tokens[0] == "" || reader.tokens.size() == 0)
@@ -62,17 +75,18 @@ int main(int argc, char const *argv[])
 
             // ----------------------------------------------- primeiros testes
 
-            // Análise da estrutura lexa do sistema
+            // Verifica Tokens Invalidos
             if (!Validation::CkeckTokens(reader.tokens))
-            {
-                err.InvalidStruc(line_file);
-            }
+                err.InvalidToken(line_file);
 
-            // Analise sintática 1
+            // Verifica se há rótulos declarados na mesma instância
             if ((Validation::CheckDuplicates(reader.tokens)))
-            {
-                err.DuplicatedRotules(line_file);
-            }
+                err.RepetitiveRotules(line_file);
+
+            // Verifica se há declaração repetida de rótulos
+            if (Validation::LabelFunction(reader.tokens) && symbs.CheckToken(reader.tokens[0]))
+                if (symbs.symbs[symbs.CheckTokenValue(reader.tokens[0])].status || symbs.symbs[symbs.CheckTokenValue(reader.tokens[0])].secData)
+                    err.DuplicatedRotules(line_file);
 
             //--------------------------------------------------
             // Validação dos valores na SECTION DATA *******************************
@@ -112,20 +126,42 @@ int main(int argc, char const *argv[])
                 // Caso para o Label Tenha sido declara na função anterior
                 if (labelaux != "" && (reader.tokens[0] == "CONST" || Validation::CheckLastString(reader.tokens[0]) || reader.tokens[0] == "SPACE"))
                 {
-                    cout << "H!" << endl;
+                    if (!Validation::LabelConstSpaceSize(reader.tokens))
+                    {
+                        err.InvalidStruc(line_file);
+                        continue;
+                    }
                     symbs.RoolLabel(reader.tokens, labelaux, pc, writer);
                     labelaux = "";
                     reader.ClearTokens();
                     continue;
                 }
                 // Roda a analise de funções
-                funcs.Function(reader.tokens, pc);
+                if (!funcs.Function(reader.tokens, pc))
+                {
+                    if (funcs.base == -2) // Função não existe
+                        err.InvalidFunc(line_file);
+
+                    if (funcs.base == -1) // Função Existe porem tem um erro na estrutura
+                        err.InvalidStruc(line_file);
+                    if (funcs.base == 0)
+                        err.InvalidDirective(line_file);
+                    continue;
+                }
+
                 // Verifica se o item em análise é uma Label
                 for (int i = 0; i < (signed)reader.tokens.size(); i++)
                 {
-
-                    symbs.TokenAdder(reader.tokens[i], i, line, pc, (Validation::LabelFunction(reader.tokens) && i == 0));
-                    symbs.LabelSimpleSearch(reader.tokens, reader.tokens[i], i);
+                    if (Validation::CheckLastString(reader.tokens[i])) // Verifica se a Estrutura da Label tem um +
+                    {
+                        symbs.TokenAdder(Validation::CheckPlusLabelToken(reader.tokens[i]), i, line, pc, (Validation::LabelFunction(reader.tokens) && i == 0));
+                        symbs.LabelSimpleSearch(reader.tokens, Validation::CheckPlusLabelToken(reader.tokens[i]), i);
+                    }
+                    else
+                    {
+                        symbs.TokenAdder(reader.tokens[i], i, line, pc, (Validation::LabelFunction(reader.tokens) && i == 0));
+                        symbs.LabelSimpleSearch(reader.tokens, reader.tokens[i], i);
+                    }
                 }
                 // Caso de analise para a Label definida
                 if (Validation::LabelFunction(reader.tokens))
@@ -140,6 +176,7 @@ int main(int argc, char const *argv[])
 
                         reader.ClearTokens();
                         labelaux = reader.tokens[0];
+
                         continue;
                     }
 
@@ -152,15 +189,18 @@ int main(int argc, char const *argv[])
                 line++;
             }
 
-            line_file++;
-
             reader.ClearTokens();
         }
 
         symbs.AddTextData(pc, writer);
+        symbs.NonDef(err.message);
         newfile.close(); //close the file object.
     }
-    reader.PrintWriter(writer);
+    // reader.PrintWriter(writer);
+    if (err.message.size() > 0)
+        err.PrintErros();
+    else
+        reader.WriteFile(writer, argv[1]);
     // symbs.PrintTable();
     return 0;
 }

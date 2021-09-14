@@ -118,4 +118,20 @@ public:
         for (int i = 0; i < (signed)writer.size(); i++)
             cout << writer[i] << endl;
     }
+
+    void WriteFile(vector<string> writer, string filename)
+    {
+        fstream newfile;
+        filename.resize(filename.size() - 3);
+        filename = filename + "bin";
+        newfile.open(filename, ios::out);
+        if (newfile.is_open())
+        {
+            for (int i = 0; i < (signed)writer.size(); i++)
+            {
+                newfile << writer[i] << endl;
+            }
+            newfile.close();
+        }
+    }
 };

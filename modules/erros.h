@@ -11,56 +11,60 @@ class ErrHandler
 public:
     vector<string> message;
 
-    void PrintError(){
-
-    };
-
-    void MissingRotules(int line)
+    void MissingRotules()
     {
         string msg;
-        msg = "Missing Rotules to be identified in line " + to_string(line);
+        msg = "Erro Semântico - Declaração de rótulos ausentes na linha ";
         message.push_back(msg);
     };
 
     void DuplicatedRotules(int line)
     {
         string msg;
-        msg = "Rotule already declareted at line " + line;
+        msg = "Erro Semântico - Dois Rótulos na mesma linha " + to_string(line);
         message.push_back(msg);
     };
 
     void RepetitiveRotules(int line)
     {
         string msg;
-        msg = "Douplicated rotule at line  " + line;
+        msg = "Erro Semântico - Declaração de Rótulos repetidos  " + to_string(line);
         message.push_back(msg);
     };
 
     void InvalidDirective(int line)
     {
         string msg;
-        msg = "Invalid Directive at Line " + line;
+        msg = "Erro Semântico - Diretivas Invalidas na linha " + to_string(line);
         message.push_back(msg);
     };
 
     void InvalidFunc(int line)
     {
         string msg;
-        msg = "Invalid Instruction at line " + line;
+        msg = "Erro Sintático - Instrução invalida " + to_string(line);
         message.push_back(msg);
     };
 
     void InvalidStruc(int line)
     {
         string msg;
-        msg = "Invalid Instructions Structure at line " + line;
+        msg = "Erro sintático - Instrução com a quantidade de operandos errada " + to_string(line);
         message.push_back(msg);
     };
 
     void InvalidToken(int line)
     {
         string msg;
-        msg = "Invalid Token at line " + line;
+        msg = "Erro Lexo - Token Invalido na linha " + to_string(line);
         message.push_back(msg);
     };
+
+    void PrintErros()
+    {
+        for (int i = 0; i < (signed)message.size(); i++)
+        {
+            cout << message[i] << endl;
+        }
+    }
 };

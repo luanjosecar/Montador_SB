@@ -3,7 +3,7 @@
 #include <string>
 #include <regex>
 #pragma once
-#include "symboltable.h"
+//#include "symboltable.h"
 using namespace std;
 
 class TokenReader
@@ -13,6 +13,11 @@ public:
 
     void GenerateTokens(string s)
     {
+        if (s == "")
+        {
+            tokens.push_back("");
+            return;
+        }
         string temp = "";
         for (int i = 0; i < (signed)s.length(); ++i)
         {
@@ -48,6 +53,7 @@ public:
     {
         for (int i = 0; i < (signed)tokens.size(); ++i)
             cout << tokens[i] << " ";
+        cout << endl;
     }
 
     void AddToken(string s, string separetor = "")
@@ -88,45 +94,70 @@ public:
         tokens.clear();
     }
 
-    void DeleteLabel()
+    // Função para remover principalmente as labels
+    void RemoveFront(int n)
     {
-        tokens.erase(tokens.begin());
-        tokens.erase(tokens.begin());
-
-        //tokens.erase(tokens.begin() + 1);
+        for (int i = 0; i < n; i++)
+            tokens.erase(tokens.begin());
     }
 
     string LineWrite(string pc)
     {
         string aux = pc + " ";
+        if (aux == " ")
+            aux = "";
         for (int i = 0; i < (signed)tokens.size(); i++)
         {
             aux = aux + tokens[i] + " ";
         }
-
         return aux;
     }
 
-    /// Metodo de passagem não otmizado
-    void RoolBackLabel(vector<string> &wrote, TS ts)
+    void PrintWriter(vector<string> writer)
     {
-        string aux;
-        for (int i = 0; i < (signed)ts.symbs.size(); i++)
+        for (int i = 0; i < (signed)writer.size(); i++)
+            cout << writer[i] << endl;
+    }
+
+    void WriteFile(vector<string> writer, string filename)
+    {
+        fstream newfile;
+        filename.resize(filename.size() - 3);
+        filename = filename + "obj";
+        newfile.open(filename, ios::out);
+        if (newfile.is_open())
         {
-            // cout << ts.symbs[i].name << " " << ts.symbs[i].secData << " " << ts.symbs[i].positions.size() << endl;
-            if (ts.symbs[i].secData == true)
-
+            for (int i = 0; i < (signed)writer.size(); i++)
             {
-                for (int j = 1; j < (signed)ts.symbs[i].positions.size(); j++)
-                {
-                    GenerateTokens(wrote[ts.symbs[i].lines[j]]);
-
-                    tokens[ts.symbs[i].positions[j] + 1] = ts.symbs[i].base;
-                    wrote[ts.symbs[i].lines[j]] = LineWrite("");
-
-                    ClearTokens();
-                }
+                newfile << writer[i] << endl;
             }
+            newfile.close();
+        }
+    }
+
+    void Writer(vector<string> writer, string filename)
+    {
+        fstream newfile;
+        TokenReader a;
+        filename.resize(filename.size() - 3);
+        filename = filename + "obj";
+        newfile.open(filename, ios::out);
+        if (newfile.is_open())
+        {
+            for (int i = 0; i < (signed)writer.size(); i++)
+            {
+                a.GenerateTokens(writer[i]);
+
+                for (int j = 0; j < (signed)a.tokens.size(); j++)
+                {
+                    if (j != 0)
+                    {
+                        newfile << a.tokens[j] << " ";
+                    }
+                }
+                a.ClearTokens();
+            }
+            newfile.close();
         }
     }
 };

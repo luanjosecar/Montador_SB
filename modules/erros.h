@@ -2,52 +2,69 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
-class ErHandler
+class ErrHandler
 {
 public:
-    string message;
+    vector<string> message;
 
-    void PrintError()
+    void MissingRotules()
     {
-        cout << "\n"
-             << message;
-    };
-
-    void MissingRotules(int line)
-    {
-        cout << "Missing Rotules to be identified";
+        string msg;
+        msg = "Erro Semantico - Declaracao de rótulos ausentes ";
+        message.push_back(msg);
     };
 
     void DuplicatedRotules(int line)
     {
-        cout << "Rotule already declareted at line " << line;
+        string msg;
+        msg = "Erro Semantico - Dois Rotulos na mesma linha " + to_string(line);
+        message.push_back(msg);
     };
 
     void RepetitiveRotules(int line)
     {
-        cout << "Douplicated rotule at line  " << line;
+        string msg;
+        msg = "Erro Semantico - Declaracao de Rotulos repetidos linha " + to_string(line);
+        message.push_back(msg);
     };
 
     void InvalidDirective(int line)
     {
-        cout << "Invalid Directive at Line " << line;
+        string msg;
+        msg = "Erro Semantico - Diretivas Invalidas na linha " + to_string(line);
+        message.push_back(msg);
     };
 
     void InvalidFunc(int line)
     {
-        cout << "Invalid Instruction at line " << line;
+        string msg;
+        msg = "Erro Sintatico - Instrucao invalida " + to_string(line);
+        message.push_back(msg);
     };
 
     void InvalidStruc(int line)
     {
-        cout << "Invalid Instructions Structure at line " << line;
+        string msg;
+        msg = "Erro sintatico - Instrucao com a quantidade de operandos errada " + to_string(line);
+        message.push_back(msg);
     };
 
     void InvalidToken(int line)
     {
-        cout << "Invalid Token at line " << line;
+        string msg;
+        msg = "Erro Lexo - Token Invalido na linha " + to_string(line);
+        message.push_back(msg);
     };
+
+    void PrintErros()
+    {
+        for (int i = 0; i < (signed)message.size(); i++)
+        {
+            cout << message[i] << endl;
+        }
+    }
 };

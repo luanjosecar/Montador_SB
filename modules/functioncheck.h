@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 #pragma once
-#include "symboltable.h"
 
 enum Func
 {
@@ -11,8 +10,8 @@ enum Func
     MULT,
     DIV,
     JMP,
-    JMPP,
     JMPN,
+    JMPP,
     JMPZ,
     COPY,
     LOAD,
@@ -27,18 +26,27 @@ class FunctionCheck
 {
 public:
     //Validation a;
-    vector<string> basefunc{"ADD", "SUB", "MULT", "DIV", "JMP", "JMPP", "JMPN", "JMPZ", "COPY", "LOAD", "STORE", "INPUT", "OUTPUT", "STOP"};
-    TS ts;
+    vector<string> basefunc{"ADD", "SUB", "MULT", "DIV", "JMP", "JMPN", "JMPP", "JMPZ", "COPY", "LOAD", "STORE", "INPUT", "OUTPUT", "STOP"};
+    //ErrHandler err;
+    int base = 0;
 
-    void Function(vector<string> &tokens, int &pc, TS ts)
+    bool Function(vector<string> &tokens, int &pc)
     {
-        this->ts = ts;
+
+        // this->ts = ts;
         bool aux = true;
+        if (tokens.size() == 2 && tokens[1] == ":")
+            return true;
+        if (Validation::LabelFunction(tokens))
+            base = 2;
+        else
+            base = 0;
+
         for (int i = 0; i < (signed)basefunc.size(); i++)
         {
-            if (tokens[0] == basefunc[i])
+            if (tokens[base] == basefunc[i])
             {
-                tokens[0] = to_string(i + 1);
+                tokens[base] = to_string(i + 1);
                 switch (i + 1)
                 {
                 case ADD:
@@ -51,45 +59,48 @@ public:
                 case JMPZ:
                 case LOAD:
                 case STORE:
+                case OUTPUT:
+                case INPUT:
                     aux = FuncTypeA(tokens);
                     pc = pc + 2;
+                    if (!aux)
+                        base = -1;
+                    return aux;
                     break;
                 case COPY:
                     aux = FuncTypeC(tokens);
                     pc = pc + 3;
-                    break;
-                case INPUT:
-                case OUTPUT:
-                    aux = FuncTypeB(tokens);
-                    pc = pc + 2;
+                    if (!aux)
+                        base = -1;
+                    return aux;
                     break;
                 case STOP:
-                    pc++;
+                    aux = FuncTypeB(tokens);
+                    pc = pc + 1;
+                    if (!aux)
+                        base = -1;
+                    return aux;
                     break;
                 default:
-                    aux = false;
+                    base = -2;
+                    return false;
                     // Erro função não encontrada
                     break;
                 }
             }
+            if (tokens[base] == "SPACE" || tokens[base] == "CONST" || Validation::CheckLastString(tokens[base]))
+            {
+                return true;
+            }
         }
-        if (aux == false)
-        {
-            //cout << "\nFunção não definida ou com erro" << tokens[0];
-        }
+        base = 0;
+        return false;
     }
-
+    // Verificação de funções de 2 elementos
     bool FuncTypeA(vector<string> &tokens)
     {
-        if ((signed)tokens.size() == 2)
+        if ((signed)tokens.size() == (2 + base))
         {
-            if (!Validation::CheckNumber(tokens[1]))
-            {
-                if (TokenValue(tokens[1]) != "")
-                {
-                    tokens[1] = TokenValue(tokens[1]);
-                }
-            }
             return true;
         }
         else
@@ -97,54 +108,28 @@ public:
             return false;
         }
     }
-
+    // Verificação de funções com 1 elemento
     bool FuncTypeB(vector<string> &tokens)
     {
-        if ((signed)tokens.size() == 1)
+        if ((signed)tokens.size() == (1 + base))
         {
             return true;
         }
         else
             return false;
     }
-
+    // Verificação de funções com 3 elementos
     bool FuncTypeC(vector<string> &tokens)
     {
-        // cout << "  " << tokens[0] << endl;
-        if ((signed)tokens.size() == 4)
+        if ((signed)tokens.size() == (4 + base))
         {
-            if (tokens[2] == ",")
+            if (tokens[2 + base] == ",")
             {
-                // cout << "  " << tokens[1] << endl;
-                // cout << "  " << tokens[3] << endl;
-                if (!Validation::CheckNumber(tokens[1]))
-                {
-                    if (TokenValue(tokens[1]) != "")
-                    {
-                        tokens[1] = TokenValue(tokens[1]);
-                        return true;
-                    }
-                }
-                if (!Validation::CheckNumber(tokens[3]))
-                {
-                    if (TokenValue(tokens[3]) != "")
-                    {
-                        tokens[3] = TokenValue(tokens[3]);
-                        return true;
-                    }
-                }
+                tokens.erase(tokens.begin() + 2 + base);
+                return true;
             }
         }
         return false;
     }
-
-    string TokenValue(string name)
-    {
-        for (int i = 0; i < (signed)ts.symbs.size(); i++)
-        {
-            if (name == ts.symbs[i].name && ts.symbs[i].status && !ts.symbs[i].secData)
-                return ts.symbs[i].base;
-        }
-        return "";
-    }
+    // Verificação se é const ou SPACE
 };

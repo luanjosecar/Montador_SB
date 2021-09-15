@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cstring>
 #include <regex>
 #pragma once
 
@@ -9,45 +10,125 @@ using namespace std;
 class Validation
 {
 public:
-    // Tipos de entrada
-    // Com Label e comment
-    // <labl> : <op> <data> ; <comment>
-    // <labl> : <op> <data> <data> ; <comment>
-    static bool CheckTokens(vector<string> token)
+    // Analise inicial dos Tokens
+    static bool CkeckTokens(vector<string> tokens)
     {
-        // Analise sintatica 1
-        bool aux = true;
+        int pos = 0;
+        if (tokens.size() > 7)
+            return false;
+        if (LabelFunction(tokens))
+            pos = 2;
+        return ValidateTokens(pos, tokens);
+    }
+
+    // Verifica se é a definição de uma variável
+    static bool LabelFunction(vector<string> tokens)
+    {
+        if (tokens.size() == 1)
+        {
+            return false;
+        }
+        if (tokens[1] == ":" && CheckString(tokens[0]))
+            return true;
+        return false;
+    }
+
+    // Verificação dos tokens validos
+    static bool ValidateTokens(int pos, vector<string> tokens)
+    {
         int i = 0;
-        if (token[1] == ":")
+        do
         {
-            i = 2;
-            if (!CheckString(token[0]))
+            // cout << CheckNumber(tokens[i]) << CheckString(tokens[i]) << CheckLastString(tokens[i]) << endl;
+
+            if (!((CheckNumber(tokens[i]) || (CheckString(tokens[i]) || CheckLastString(tokens[i])))))
+            {
                 return false;
-        }
-        aux = ValidateTokens(i, token);
-        return aux;
-    }
-
-    static bool ValidateTokens(int pos, vector<string> token)
-    {
-        bool aux = CheckString(token[pos]);
-        int i = pos + 1;
-        if (!aux)
-            return aux;
-
-        while (i < (signed)token.size())
-        {
-            aux = CheckNumber(token[i]) || CheckString(token[i]);
-            if (!aux)
-                return aux;
+            }
             i++;
-        }
-
-        return aux;
+        } while (i < (signed)tokens.size());
+        return true;
     }
 
+    // Verificação da ultima string
+    static bool CheckLastString(string label)
+    {
+        // Falso Para o caso do LABEL < 7 CHARS
+        string temp = "";
+        string aux1 = "";
+        bool aux2 = false;
+        for (int i = 0; i < (signed)label.length(); ++i)
+        {
+            char up = label[i];
+            if (up == '+')
+            {
+                aux2 = true;
+                continue;
+            }
+            if (aux2)
+                aux1.push_back(up);
+            else
+                temp.push_back(up);
+        }
+        if (aux1 == "")
+            return false;
+        if (CheckNumber(aux1) && CheckString(temp))
+            return true;
+        return false;
+    }
+
+    static string CheckPlusLabelToken(string label)
+    {
+        string temp = "";
+        string aux1 = "";
+        bool aux2 = false;
+        for (int i = 0; i < (signed)label.length(); ++i)
+        {
+            char up = label[i];
+            if (up == '+')
+            {
+                aux2 = true;
+                continue;
+            }
+            if (aux2)
+                aux1.push_back(up);
+            else
+                temp.push_back(up);
+        }
+        if (CheckNumber(aux1) && CheckString(temp))
+            return temp;
+        return "";
+    }
+
+    static string CheckPlusLabelInt(string label)
+    {
+        string temp = "";
+        string aux1 = "";
+        bool aux2 = false;
+        for (int i = 0; i < (signed)label.length(); ++i)
+        {
+            char up = label[i];
+            if (up == '+')
+            {
+                aux2 = true;
+                continue;
+            }
+            if (aux2)
+                aux1.push_back(up);
+            else
+                temp.push_back(up);
+        }
+        if (CheckNumber(aux1) && CheckString(temp))
+            return aux1;
+        return "";
+    }
+
+    // Busca por Números
     static bool CheckNumber(string s)
     {
+        if (s == "")
+            return false;
+
         for (int i = 0; i < (signed)s.length(); i++)
         {
             if (isdigit(s[i]) == 0)
@@ -56,10 +137,11 @@ public:
         return true;
     }
 
+    // Busca de Strings Validas sem caracteres especiais
     static bool CheckString(string s)
     {
 
-        regex regx("[@!#$%^&*()<>?/|}{~]");
+        regex regx("[@!#$%^&*()<>+?/|}{~]");
 
         if (isdigit(s[0]) != 0)
             return false;
@@ -73,41 +155,49 @@ public:
         return true;
     }
 
-    static bool AnaliseLexa(vector<string> token)
+    // Verifica se Label duplas no sistema
+    static bool CheckDuplicates(vector<string> tokens)
     {
-        for (int i = 0; i < (signed)token.size(); i++)
+        if (tokens.size() == 1)
+            return false;
+        for (int i = 0; i < (signed)tokens.size(); i++)
         {
-            if (!(CheckNumber(token[i]) || CheckString(token[i])))
+            for (int j = 0; j < (signed)tokens.size(); j++)
             {
-                //cout << "  erro no item " << i << "  ";
-                return false;
-            }
-        }
-        return true;
-    }
-
-    static bool LabelDefinition(vector<string> token, string name)
-    {
-        if (token.size() > 1)
-        {
-            if (token[1] == ":" && name == token[0])
-            {
-                return true;
+                if (tokens[i] == tokens[j] && i != j)
+                    return true;
             }
         }
         return false;
     }
 
-    static bool SectionAnalises(vector<string> token, bool state)
+    static int SectionCheck(vector<string> token)
     {
 
         if ((signed)token.size() == 2)
         {
-            if (token[0] == "SECTION" && token[1] == "TEXT")
-                return false;
-            if (token[0] == "SECTION" && token[1] == "DATA")
-                return true;
+            if (token[0] == "SECTION")
+            {
+                if (token[1] == "TEXT")
+                    return 1;
+                if (token[1] == "DATA")
+                    return 2;
+
+                return -1;
+            }
         }
-        return state;
+        return 0;
+    }
+
+    static bool LabelOnly(vector<string> token)
+    {
+        return (token.size() == 2 && CheckString(token[0]) && token[1] == ":");
+    }
+
+    static bool LabelConstSpaceSize(vector<string> tokens)
+    {
+        if (tokens[0] == "CONST")
+            return (tokens.size() == 2);
+        return (tokens.size() == 1);
     }
 };

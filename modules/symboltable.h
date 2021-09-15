@@ -134,24 +134,43 @@ public:
     {
         if (tokens.size() == 3) // Caso LABEL : SPACE
         {
-            if (SpaceValue(tokens[tokens.size() - 1]) != -1)
+
+            if (SpaceValue(tokens[2]) != -1)
             {
-                Symbols aux;
-                aux.secData = true;
-                aux.constFunc = false;
-                aux.name = tokens[0];
-                aux.constValue = to_string(SpaceValue(tokens[tokens.size() - 1]));
-                symbs.push_back(aux);
+                if (CheckTokenValue(tokens[0]) >= 0)
+                {
+                    symbs[CheckTokenValue(tokens[0])].secData = true;
+                    symbs[CheckTokenValue(tokens[0])].constFunc = false;
+                    symbs[CheckTokenValue(tokens[0])].constValue = to_string(SpaceValue(tokens[2]));
+                }
+                else
+                {
+                    Symbols aux;
+                    aux.secData = true;
+                    aux.constFunc = false;
+                    aux.name = tokens[0];
+                    aux.constValue = to_string(SpaceValue(tokens[2]));
+                    symbs.push_back(aux);
+                }
             }
         }
         if (tokens.size() == 4 && tokens[2] == "CONST" && tokens[1] == ":" && Validation::CheckNumber(tokens[3]))
         {
-            Symbols aux;
-            aux.secData = true;
-            aux.constFunc = true;
-            aux.name = tokens[0];
-            aux.constValue = tokens[3];
-            symbs.push_back(aux);
+            if (CheckTokenValue(tokens[0]) >= 0)
+            {
+                symbs[CheckTokenValue(tokens[0])].secData = true;
+                symbs[CheckTokenValue(tokens[0])].constFunc = true;
+                symbs[CheckTokenValue(tokens[0])].constValue = tokens[3];
+            }
+            else
+            {
+                Symbols aux;
+                aux.secData = true;
+                aux.constFunc = true;
+                aux.name = tokens[0];
+                aux.constValue = tokens[3];
+                symbs.push_back(aux);
+            }
         }
     }
 
@@ -204,7 +223,7 @@ public:
 
                 if (symbs[i].constFunc)
                 {
-                    aux = symbs[i].base + " 0" + symbs[i].constValue;
+                    aux = symbs[i].base + " " + symbs[i].constValue;
                     writer.push_back(aux);
                     pos++;
                 }
@@ -212,7 +231,7 @@ public:
                 {
                     for (int j = 0; j <= atoi(symbs[i].constValue.c_str()); j++)
                     {
-                        aux = to_string(pos) + " 00";
+                        aux = to_string(pos) + " 0";
                         writer.push_back(aux);
                         pos++;
                     }
@@ -227,13 +246,12 @@ public:
         if (tokens[0] == "CONST")
         {
             tokens.erase(tokens.begin());
-            tokens[0] = "0" + tokens[0];
             pc++;
         }
         if (tokens[0] == "SPACE")
         {
             tokens.erase(tokens.begin());
-            tokens.push_back("00");
+            tokens.push_back("0");
             pc++;
         }
 
@@ -242,12 +260,12 @@ public:
 
             for (int i = 0; i < atoi(Validation::CheckPlusLabelInt(tokens[0]).c_str()) - 1; i++)
             {
-                aux = to_string(aux1) + " 00";
+                aux = to_string(aux1) + " 0";
                 writer.push_back(aux);
                 aux1++;
                 pc++;
             }
-            tokens[0] = "00";
+            tokens[0] = "0";
             pc++;
         }
     }
@@ -265,7 +283,7 @@ public:
                 return;
             symbs[CheckTokenValue(label)].constFunc = true;
             symbs[CheckTokenValue(label)].constValue = tokens[1];
-            writer.push_back(to_string(pc) + " 0" + tokens[1]);
+            writer.push_back(to_string(pc) + " " + tokens[1]);
             pc++;
             return;
         }
@@ -273,7 +291,7 @@ public:
         {
             tokens.erase(tokens.begin());
             symbs[CheckTokenValue(label)].constFunc = false;
-            writer.push_back(to_string(pc) + " 00");
+            writer.push_back(to_string(pc) + " 0");
             pc++;
             return;
         }
@@ -283,7 +301,7 @@ public:
             symbs[CheckTokenValue(label)].constValue = Validation::CheckPlusLabelInt(tokens[0]);
             for (int i = 0; i < atoi(Validation::CheckPlusLabelInt(tokens[0]).c_str()); i++)
             {
-                aux = to_string(pc) + " 00";
+                aux = to_string(pc) + " 0";
                 writer.push_back(aux);
                 pc++;
             }
@@ -347,7 +365,7 @@ public:
 
         for (int i = 0; i < (signed)symbs.size(); i++)
         {
-            cout << symbs[i].name << "------------ " << symbs[i].base << " --- " << symbs[i].constValue << endl;
+            cout << symbs[i].name << "------------ PC: " << symbs[i].base << " --- SEC : " << symbs[i].secData << endl;
             cout << "Lines = ";
             for (int j = 0; j < (signed)symbs[i].lines.size(); j++)
             {
@@ -376,7 +394,7 @@ public:
         {
             if (symbs[i].status == false)
             {
-                aux = "Erro Semântico - Declaração de rótulos ausentes : " + symbs[i].name;
+                aux = "Erro Semantico - Declaracao de rotulos ausentes : " + symbs[i].name;
                 message.push_back(aux);
             }
         }

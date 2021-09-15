@@ -38,7 +38,7 @@ class Simulator
 public:
     vector<CodeLine> code;
     vector<Labels> lb;
-    int ADC = 0;
+    int ACC = 0;
 
     void Start()
     {
@@ -149,19 +149,19 @@ public:
             {
             case ADD:
                 PrintData("ADD", tp[0]);
-                ADC = ADC + MathFunc(tp);
+                ACC = ACC + MathFunc(tp);
                 break;
             case SUB:
                 PrintData("SUB", tp[0]);
-                ADC = ADC - MathFunc(tp);
+                ACC = ACC - MathFunc(tp);
                 break;
             case MULT:
                 PrintData("MULT", tp[0]);
-                ADC = ADC * MathFunc(tp);
+                ACC = ACC * MathFunc(tp);
                 break;
             case DIV:
                 PrintData("DIV", tp[0]);
-                ADC = (int)(ADC / MathFunc(tp));
+                ACC = (int)(ACC / MathFunc(tp));
                 break;
             case JMP:
             case JMPP:
@@ -220,7 +220,7 @@ public:
         for (int i = 0; i < (signed)lb.size(); i++)
         {
             if (atoi(token[2].c_str()) == lb[i].pc)
-                this->ADC = lb[i].value;
+                this->ACC = lb[i].value;
         }
     }
 
@@ -230,7 +230,7 @@ public:
         for (int i = 0; i < (signed)lb.size(); i++)
         {
             if (atoi(token[2].c_str()) == lb[i].pc)
-                lb[i].value = this->ADC;
+                lb[i].value = this->ACC;
         }
     }
 
@@ -243,19 +243,19 @@ public:
             PrintData("JMP", token[0]);
             return CheckPC(token[2]);
         }
-        if (atoi(token[1].c_str()) == JMPP && ADC > 0)
+        if (atoi(token[1].c_str()) == JMPP && ACC > 0)
         {
             //Realiza Jump
 
             PrintData("JMPP", token[0]);
             return CheckPC(token[2]);
         }
-        if (atoi(token[1].c_str()) == JMPN && ADC < 0)
+        if (atoi(token[1].c_str()) == JMPN && ACC < 0)
         {
             PrintData("JMPN", token[0]);
             return CheckPC(token[2]);
         }
-        if (atoi(token[1].c_str()) == JMPZ && ADC == 0)
+        if (atoi(token[1].c_str()) == JMPZ && ACC == 0)
         {
             PrintData("JMPZ", token[0]);
             return CheckPC(token[2]);
@@ -315,10 +315,14 @@ public:
     {
         Labels b;
         vector<string> tp;
+        bool aux = false;
         for (int i = 0; i < (signed)code.size(); i++)
         {
             tp = this->code[i].tokens;
-            if (tp.size() == 2 && tp[1][0] == '0')
+
+            if (tp.size() == 2 && tp[1] == "14")
+                aux = true;
+            if (aux)
             {
                 b.pc = atoi(tp[0].c_str());
                 b.value = atoi(tp[1].c_str());
@@ -330,7 +334,7 @@ public:
     void PrintData(string op, string pc)
     {
         cout << "----------------------------------" << endl
-             << "OP: " << op << " PC: " << pc << " ADC: " << ADC << endl;
+             << "OP: " << op << " PC: " << pc << " ACC: " << ACC << endl;
     }
 
     void PrintLabels()

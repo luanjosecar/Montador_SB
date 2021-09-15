@@ -80,17 +80,44 @@ int main(int argc, char const *argv[])
 
             // Verifica Tokens Invalidos
             if (!Validation::CkeckTokens(reader.tokens))
+            {
                 err.InvalidToken(line_file);
+                reader.ClearTokens();
+                continue;
+            }
 
             // Verifica se há rótulos declarados na mesma instância
             if ((Validation::CheckDuplicates(reader.tokens)))
+            {
                 err.RepetitiveRotules(line_file);
+                reader.ClearTokens();
+                continue;
+            }
 
             // Verifica se há declaração repetida de rótulos
             if (Validation::LabelFunction(reader.tokens) && symbs.CheckToken(reader.tokens[0]))
                 if (symbs.symbs[symbs.CheckTokenValue(reader.tokens[0])].status || symbs.symbs[symbs.CheckTokenValue(reader.tokens[0])].secData)
+                {
                     err.DuplicatedRotules(line_file);
 
+                    reader.ClearTokens();
+                    continue;
+                }
+
+            if (Validation::LabelFunction(reader.tokens) && labelaux != "")
+            {
+                err.DuplicatedRotules(line_file);
+
+                reader.ClearTokens();
+                continue;
+            }
+
+            if (Validation::SectionCheck(reader.tokens) == -1)
+            {
+                err.InvalidDirective(line_file);
+                reader.ClearTokens();
+                continue;
+            }
             //--------------------------------------------------
             // Validação dos valores na SECTION DATA *******************************
             if (Validation::SectionCheck(reader.tokens) == 1)
@@ -132,6 +159,8 @@ int main(int argc, char const *argv[])
                     if (!Validation::LabelConstSpaceSize(reader.tokens))
                     {
                         err.InvalidStruc(line_file);
+
+                        reader.ClearTokens();
                         continue;
                     }
                     symbs.RoolLabel(reader.tokens, labelaux, pc, writer);
@@ -144,11 +173,12 @@ int main(int argc, char const *argv[])
                 {
                     if (funcs.base == -2) // Função não existe
                         err.InvalidFunc(line_file);
-
                     if (funcs.base == -1) // Função Existe porem tem um erro na estrutura
                         err.InvalidStruc(line_file);
-                    if (funcs.base == 0)
+                    if (funcs.base == 0) // Diretiva Invalida
                         err.InvalidDirective(line_file);
+
+                    reader.ClearTokens();
                     continue;
                 }
 
@@ -177,9 +207,8 @@ int main(int argc, char const *argv[])
                     if (Validation::LabelOnly(reader.tokens))
                     {
 
-                        reader.ClearTokens();
                         labelaux = reader.tokens[0];
-
+                        reader.ClearTokens();
                         continue;
                     }
 
@@ -196,10 +225,12 @@ int main(int argc, char const *argv[])
         }
 
         symbs.AddTextData(pc, writer);
-        symbs.NonDef(err.message);
         newfile.close(); //close the file object.
     }
+
     // reader.PrintWriter(writer);
+    // symbs.PrintTable();
+    symbs.NonDef(err.message);
     if (err.message.size() > 0)
         err.PrintErros();
     else

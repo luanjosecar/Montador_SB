@@ -14,42 +14,42 @@ public:
     void MissingRotules()
     {
         string msg;
-        msg = "Erro Semântico - Declaração de rótulos ausentes na linha ";
+        msg = "Erro Semantico - Declaracao de rótulos ausentes ";
         message.push_back(msg);
     };
 
     void DuplicatedRotules(int line)
     {
         string msg;
-        msg = "Erro Semântico - Dois Rótulos na mesma linha " + to_string(line);
+        msg = "Erro Semantico - Dois Rotulos na mesma linha " + to_string(line);
         message.push_back(msg);
     };
 
     void RepetitiveRotules(int line)
     {
         string msg;
-        msg = "Erro Semântico - Declaração de Rótulos repetidos  " + to_string(line);
+        msg = "Erro Semantico - Declaracao de Rotulos repetidos linha " + to_string(line);
         message.push_back(msg);
     };
 
     void InvalidDirective(int line)
     {
         string msg;
-        msg = "Erro Semântico - Diretivas Invalidas na linha " + to_string(line);
+        msg = "Erro Semantico - Diretivas Invalidas na linha " + to_string(line);
         message.push_back(msg);
     };
 
     void InvalidFunc(int line)
     {
         string msg;
-        msg = "Erro Sintático - Instrução invalida " + to_string(line);
+        msg = "Erro Sintatico - Instrucao invalida " + to_string(line);
         message.push_back(msg);
     };
 
     void InvalidStruc(int line)
     {
         string msg;
-        msg = "Erro sintático - Instrução com a quantidade de operandos errada " + to_string(line);
+        msg = "Erro sintatico - Instrucao com a quantidade de operandos errada " + to_string(line);
         message.push_back(msg);
     };
 

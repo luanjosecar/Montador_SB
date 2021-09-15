@@ -41,14 +41,13 @@ public:
         {
             // cout << CheckNumber(tokens[i]) << CheckString(tokens[i]) << CheckLastString(tokens[i]) << endl;
 
-            if ((CheckNumber(tokens[i]) || (CheckString(tokens[i]) || CheckLastString(tokens[i]))))
+            if (!((CheckNumber(tokens[i]) || (CheckString(tokens[i]) || CheckLastString(tokens[i])))))
             {
-                return true;
-                break;
+                return false;
             }
             i++;
         } while (i < (signed)tokens.size());
-        return false;
+        return true;
     }
 
     // Verificação da ultima string
@@ -177,10 +176,15 @@ public:
 
         if ((signed)token.size() == 2)
         {
-            if (token[0] == "SECTION" && token[1] == "TEXT")
-                return 1;
-            if (token[0] == "SECTION" && token[1] == "DATA")
-                return 2;
+            if (token[0] == "SECTION")
+            {
+                if (token[1] == "TEXT")
+                    return 1;
+                if (token[1] == "DATA")
+                    return 2;
+
+                return -1;
+            }
         }
         return 0;
     }

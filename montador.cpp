@@ -8,7 +8,7 @@
 #include "modules\tokenvalidator.h"
 #include "modules\erros.h"
 #include "modules\functioncheck.h"
-
+#include "modules\header.h"
 using namespace std;
 
 bool PRINTER = false;
@@ -39,26 +39,30 @@ bool FilenameValidation(string s)
 int main(int argc, char const *argv[])
 {
 
-    if (!FilenameValidation(argv[1]))
-    {
-        cout << "Nome do arquivo Invalido por favor confirme a extensão " << endl;
-        return 0;
-    }
-
     fstream newfile;
 
     TokenReader reader;
     TS symbs;
     FunctionCheck funcs;
     ErrHandler err;
+    HeaderCheck header;
 
-    vector<string> writer;
+    vector<string>
+        writer;
     int line = 0;
     int pc = 0;
     int line_file = 0;
     int aux = 0;
     bool sectionText = false;
     string labelaux = "";
+
+    if (!header.ValidateArgs(argc, argv))
+    {
+        cout << "Argumentos de entrada invalidos " << endl;
+        return 0;
+    }
+
+    //header.ValidateArgs(argc, argv);
 
     newfile.open(argv[1], ios::in);
 
@@ -221,6 +225,13 @@ int main(int argc, char const *argv[])
                 line++;
             }
 
+            reader.PrintTokens();
+            // Verificação do novo modelo do montador
+            if (header.execution == 2)
+                header.Bitmap(reader.tokens);
+            if (header.execution == 3)
+                header.Realocacao(reader.tokens);
+
             reader.ClearTokens();
         }
 
@@ -230,16 +241,37 @@ int main(int argc, char const *argv[])
 
     // reader.PrintWriter(writer);
     // symbs.PrintTable();
+    header.filesize = symbs.ProgramSize();
+    header.code = writer;
     symbs.NonDef(err.message);
-    if (err.message.size() > 0)
-        err.PrintErros();
-    else
+
+    switch (header.execution)
     {
-        if (PRINTER)
-            reader.WriteFile(writer, argv[1]);
+    case 1:
+        // Modelo de impressão anterior --------------------------------------------------
+        if (err.message.size() > 0)
+            err.PrintErros();
         else
-            reader.Writer(writer, argv[1]);
+        {
+            if (PRINTER)
+                reader.WriteFile(writer, argv[1]);
+            else
+                reader.Writer(writer, argv[1]);
+        }
+        //------------------------------------------------------------------------------
+
+        break;
+    case 2:
+    case 3:
+        if (strcmp(argv[1], "-e") && err.message.size() > 0)
+            err.PrintErros();
+        else
+            header.WriteFile();
+        break;
+    default:
+        break;
     }
+
     // symbs.PrintTable();
     return 0;
 }

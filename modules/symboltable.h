@@ -399,4 +399,15 @@ public:
             }
         }
     }
+
+    int ProgramSize()
+    {
+        int aux = 0;
+        for (int i = 0; i < (signed)symbs.size(); i++)
+        {
+            if (stoi(symbs[i].base) > aux)
+                aux = stoi(symbs[i].base);
+        }
+        return aux + 1;
+    }
 };

@@ -11,30 +11,7 @@
 #include "modules\header.h"
 using namespace std;
 
-bool PRINTER = false;
-
-bool FilenameValidation(string s)
-{
-    string temp = "";
-    string aux1 = "";
-    bool aux2 = false;
-    for (int i = 0; i < (signed)s.length(); ++i)
-    {
-        char up = s[i];
-        if (up == '.')
-        {
-            aux2 = true;
-            continue;
-        }
-        if (aux2)
-            aux1.push_back(up);
-        else
-            temp.push_back(up);
-    }
-    if (!temp.empty() && aux1 == "asm")
-        return true;
-    return false;
-}
+bool PRINTER = true;
 
 int main(int argc, char const *argv[])
 {
@@ -64,7 +41,7 @@ int main(int argc, char const *argv[])
 
     //header.ValidateArgs(argc, argv);
 
-    newfile.open(argv[1], ios::in);
+    newfile.open(header.filename, ios::in);
 
     if (newfile.is_open())
     {
@@ -185,7 +162,6 @@ int main(int argc, char const *argv[])
                     reader.ClearTokens();
                     continue;
                 }
-
                 // Verifica se o item em análise é uma Label
                 for (int i = 0; i < (signed)reader.tokens.size(); i++)
                 {
@@ -225,7 +201,6 @@ int main(int argc, char const *argv[])
                 line++;
             }
 
-            reader.PrintTokens();
             // Verificação do novo modelo do montador
             if (header.execution == 2)
                 header.Bitmap(reader.tokens);

@@ -76,7 +76,6 @@ public:
         if (!temp.empty() && aux1 == "asm")
         {
             filename = s;
-            filename.resize(filename.size() - 3);
             return true;
         }
         return false;
@@ -84,22 +83,20 @@ public:
 
     void Bitmap(vector<string> tokens)
     {
-        for (int i = 0; i < (signed)tokens.size(); i++)
+        filemodel.push_back("0");
+        for (int i = 1; i < (signed)tokens.size(); i++)
         {
-            if (Validation::CheckNumber(tokens[i]))
-                filemodel.push_back("0");
-            else
-                filemodel.push_back("1");
+            filemodel.push_back("1");
         }
     }
 
     void Realocacao(vector<string> tokens)
     {
-
-        for (int i = 0; i < (signed)tokens.size(); i++)
+        contador++;
+        for (int i = 1; i < (signed)tokens.size(); i++)
         {
-            if (!Validation::CheckNumber(tokens[i]))
-                filemodel.push_back(to_string(contador));
+            filemodel.push_back(to_string(contador));
+            filemodel.push_back(" ");
             contador++;
         }
     }
@@ -109,20 +106,21 @@ public:
         fstream newfile;
         TokenReader a;
         string name = filename;
-        name.resize(name.size() - 1);
-        this->filename = this->filename + "obj";
-        newfile.open(filename, ios::out);
+        name.resize(name.size() - 4);
+        name = name + ".obj";
+        newfile.open(name, ios::out);
         if (newfile.is_open())
         {
-            newfile << "T : " << name << endl;
-            newfile << "T : " << filesize << endl;
-            newfile << "T : ";
+            newfile << "H : " << name << endl;
+            newfile << "H : " << filesize << endl;
+            newfile << "H : ";
             for (int i = 0; i < (signed)filemodel.size(); i++)
             {
+
                 newfile << filemodel[i];
             }
             newfile << endl
-                    << "H : ";
+                    << "T : ";
             for (int i = 0; i < (signed)code.size(); i++)
             {
                 a.GenerateTokens(code[i]);

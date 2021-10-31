@@ -60,5 +60,25 @@ public:
         return false;
     }
 
-    bool SuficientChunckSpace();
+    int NeededSpace(int mem_size, int chunck_use = 0)
+    {
+        int totalSpace = 0;
+        for (int i = chunck_use; i < (signed)chunckSpace.size(); i++)
+        {
+            totalSpace += chunckSpace[i];
+
+            if (mem_size < totalSpace)
+            {
+                cout << "MM : " << mem_size << " Space : " << totalSpace << " i : " << i << endl;
+                return i + 1;
+            }
+        }
+        return -1;
+    }
+
+    void PrintChunckPlaces(int number, int begin)
+    {
+        for (int i = begin; i < number; i++)
+            cout << chunckPlace[i] << " ";
+    }
 };

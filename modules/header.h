@@ -107,11 +107,12 @@ public:
         TokenReader a;
         string name = filename;
         name.resize(name.size() - 4);
+        filename = name;
         name = name + ".obj";
         newfile.open(name, ios::out);
         if (newfile.is_open())
         {
-            newfile << "H : " << name << endl;
+            newfile << "H : " << filename << endl;
             newfile << "H : " << filesize << endl;
             newfile << "H : ";
             for (int i = 0; i < (signed)filemodel.size(); i++)

@@ -201,11 +201,11 @@ int main(int argc, char const *argv[])
                 line++;
             }
 
-            // Verificação do novo modelo do montador
-            if (header.execution == 2)
-                header.Bitmap(reader.tokens);
-            if (header.execution == 3)
-                header.Realocacao(reader.tokens);
+                if (header.execution == 2)
+                    header.Bitmap(reader.tokens);
+                if (header.execution == 3)
+                    header.Realocacao(reader.tokens);
+            
 
             reader.ClearTokens();
         }

@@ -24,6 +24,7 @@ public:
     void DefineVariables(string s)
     {
         codename = s;
+        codename.resize(codename.size() - 4);
         fstream newfile;
         TokenReader reader;
         newfile.open(s, ios::in);

@@ -10,7 +10,7 @@
 #include "modules\functioncheck.h"
 #include "modules\header.h"
 #include "modules\chunkscheck.h"
-#include "modules\memory.h"
+#include "modules\memhendler.h"
 using namespace std;
 
 int main(int argc, char const *argv[])
@@ -18,15 +18,13 @@ int main(int argc, char const *argv[])
     vector<string> files;
     Chunks chunks;
     HeaderCheck header;
-    Memory aux_mem;
-    vector<Memory> mem;
+    MemHandler mem;
     int chunkIndice;
     for (int i = 0; i < argc; i++)
     {
         if (chunks.CheckObjectFile(argv[i]))
         {
-            aux_mem.DefineVariables(argv[i]);
-            mem.push_back(aux_mem);
+            mem.AlocateMem(argv[i]);
             continue;
         }
         if (Validation::CheckNumber(argv[i]))
@@ -37,11 +35,15 @@ int main(int argc, char const *argv[])
     }
 
     chunks.ReadArgs(argv, chunkIndice);
-    chunks.PrintChunks();
+    //chunks.PrintChunks();
+    //mem.PrintMemory();
 
-    for (int i = 0; i < (signed)mem.size(); i++)
+    if (!mem.VerifySizes(chunks))
     {
-        mem[i].PrintMemory();
+        return 0;
     }
+
+    mem.PrintUsedChunks(chunks);
+
     return 0;
 }

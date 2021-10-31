@@ -91,17 +91,18 @@ public:
     void BitwisePrint(Chunks space, int used = 0)
     {
         int op = space.chunckPlace[used];
-        int usedspace = 0;
+        int usedspace = used;
         int totalSpace = space.chunckSpace[used];
         string decoder = codebase[0];
         for (int i = 0; i < (signed)decoder.length(); i++)
         {
             if (totalSpace <= i)
             {
-                used++;
-                op = space.chunckPlace[used];
-                usedspace = i;
-                totalSpace += space.chunckSpace[used];
+                //used++;
+                usedspace++;
+                op = space.chunckPlace[usedspace];
+
+                totalSpace += space.chunckSpace[usedspace];
             }
 
             if (decoder[i] == '0')
@@ -125,7 +126,7 @@ public:
                     auxspace += space.chunckSpace[j];
                     if (stoi(code[i]) < auxspace)
                     {
-                        cout << stoi(code[i]) + space.chunckPlace[j] - alocatedspace - usedspace << " ";
+                        cout << stoi(code[i]) + space.chunckPlace[j] - alocatedspace << " ";
                         break;
                     }
                     alocatedspace += space.chunckSpace[j];
@@ -139,17 +140,17 @@ public:
         int op = space.chunckPlace[used];
         int counter = 0;
         int totalSpace = space.chunckSpace[used];
-        int usedspace = 0;
+        int usedspace = used;
         string decoder = codebase[0];
         for (int i = 0; i < (signed)code.size(); i++)
         {
             if (totalSpace <= i)
             {
-                used++;
-                op = space.chunckPlace[used];
+                //used++;
+                usedspace++;
+                op = space.chunckPlace[usedspace];
                 // opaux = op;
-                totalSpace += space.chunckSpace[used];
-                usedspace = i;
+                totalSpace += space.chunckSpace[usedspace];
             }
 
             if (i != stoi(codebase[counter]))
@@ -164,16 +165,17 @@ public:
             }
             else
             {
-
+                // cout << " code " << code[i] << " ";
                 // Falta ajustar para multiplos chunks sendo usados
                 int auxspace = 0;
                 int alocatedspace = 0;
                 for (int j = used; j < (signed)space.chunckSpace.size(); j++)
                 {
                     auxspace += space.chunckSpace[j];
+                    // cout << "Space " << auxspace << " ";
                     if (stoi(code[i]) < auxspace)
                     {
-                        cout << stoi(code[i]) + space.chunckPlace[j] - alocatedspace - usedspace << " ";
+                        cout << stoi(code[i]) + space.chunckPlace[j] - alocatedspace << " ";
                         break;
                     }
                     alocatedspace += space.chunckSpace[j];

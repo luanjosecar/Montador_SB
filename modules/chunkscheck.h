@@ -67,7 +67,7 @@ public:
         {
             totalSpace += chunckSpace[i];
 
-            if (mem_size < totalSpace)
+            if (mem_size <= totalSpace)
             {
                 //cout << "MM : " << mem_size << " Space : " << totalSpace << " i : " << i << endl;
                 return i + 1;
@@ -80,5 +80,13 @@ public:
     {
         for (int i = begin; i < number; i++)
             cout << chunckPlace[i] << " ";
+    }
+
+    void CheckTotalSize()
+    {
+        int total_space = 0;
+        for (int i = 0; i < (signed)chunckSpace.size(); i++)
+            total_space += chunckSpace[i];
+        cout << "Total Chuncks space " << total_space << endl;
     }
 };

@@ -15,7 +15,7 @@ class MemHandler
 {
 public:
     vector<Memory> mem_vec;
-    vector<int> usedchunks;
+    //vector<int> usedchunks;
 
     void AlocateMem(string arg)
     {
@@ -49,8 +49,8 @@ public:
             total += aux;
 
             //cout << "Total : " << total << " aux : " << aux << endl;
-
-            usedchunks.push_back(aux);
+            mem_vec[i].chunksused = aux;
+            //usedchunks.push_back(aux);
         }
         return true;
     }
@@ -60,10 +60,20 @@ public:
         int used = 0;
         for (int i = 0; i < (signed)mem_vec.size(); i++)
         {
-            cout << mem_vec[i].codename << " utilizando " << usedchunks[i] - used << " CHUNKS. Enderecos iniciais em : ";
-            space.PrintChunckPlaces(usedchunks[i], used);
+            cout << mem_vec[i].codename << " utilizando " << mem_vec[i].chunksused - used << " CHUNKS. Enderecos iniciais em : ";
+            space.PrintChunckPlaces(mem_vec[i].chunksused, used);
             cout << endl;
-            used = usedchunks[i];
+            used = mem_vec[i].chunksused;
+        }
+    }
+
+    void WriteFile(Chunks space)
+    {
+        int used = 0;
+        for (int i = 0; i < (signed)mem_vec.size(); i++)
+        {
+            mem_vec[i].WriteFile(space, used);
+            used = mem_vec[i].chunksused;
         }
     }
 };

@@ -45,5 +45,7 @@ int main(int argc, char const *argv[])
 
     mem.PrintUsedChunks(chunks);
 
+    mem.WriteFile(chunks);
+
     return 0;
 }

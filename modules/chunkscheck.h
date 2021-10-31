@@ -69,7 +69,7 @@ public:
 
             if (mem_size < totalSpace)
             {
-                cout << "MM : " << mem_size << " Space : " << totalSpace << " i : " << i << endl;
+                //cout << "MM : " << mem_size << " Space : " << totalSpace << " i : " << i << endl;
                 return i + 1;
             }
         }

@@ -131,5 +131,32 @@ public:
         }
         return false;
     }
-    // Verificação se é const ou SPACE
+
+    static int FunctionOP(int name)
+    {
+        switch (name)
+        {
+        case ADD:
+        case SUB:
+        case MULT:
+        case DIV:
+        case JMP:
+        case JMPP:
+        case JMPN:
+        case JMPZ:
+        case LOAD:
+        case STORE:
+        case OUTPUT:
+        case INPUT:
+            return 2;
+        case COPY:
+            return 3;
+        case STOP:
+            return 1;
+        default:
+            return 1;
+            // Erro função não encontrada
+            break;
+        }
+    }
 };

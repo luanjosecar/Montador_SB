@@ -201,12 +201,6 @@ int main(int argc, char const *argv[])
                 line++;
             }
 
-                if (header.execution == 2)
-                    header.Bitmap(reader.tokens);
-                if (header.execution == 3)
-                    header.Realocacao(reader.tokens);
-            
-
             reader.ClearTokens();
         }
 
@@ -216,6 +210,12 @@ int main(int argc, char const *argv[])
 
     // reader.PrintWriter(writer);
     // symbs.PrintTable();
+
+    if (header.execution == 2)
+        header.Bitmap(writer);
+    if (header.execution == 3)
+        header.Realocacao(writer);
+
     header.filesize = symbs.ProgramSize();
     header.code = writer;
     symbs.NonDef(err.message);

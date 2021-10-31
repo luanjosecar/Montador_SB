@@ -81,23 +81,43 @@ public:
         return false;
     }
 
-    void Bitmap(vector<string> tokens)
+    void Bitmap(vector<string> code)
     {
-        filemodel.push_back("0");
-        for (int i = 1; i < (signed)tokens.size(); i++)
+        TokenReader a;
+        string aux = "";
+        for (int i = 0; i < (signed)code.size(); i++)
         {
-            filemodel.push_back("1");
+            a.GenerateTokens(code[i]);
+
+            for (int j = 1; j < (signed)a.tokens.size(); j++)
+            {
+                if (j == 1)
+                    aux += "0";
+                if (j != 1)
+                    aux += "1";
+            }
+            a.ClearTokens();
         }
+        filemodel.push_back(aux);
     }
 
-    void Realocacao(vector<string> tokens)
+    void Realocacao(vector<string> code)
     {
-        contador++;
-        for (int i = 1; i < (signed)tokens.size(); i++)
+        TokenReader a;
+
+        for (int i = 0; i < (signed)code.size(); i++)
         {
-            filemodel.push_back(to_string(contador));
-            filemodel.push_back(" ");
-            contador++;
+            a.GenerateTokens(code[i]);
+
+            for (int j = 1; j < (signed)a.tokens.size(); j++)
+            {
+                if (j != 1)
+                {
+                    filemodel.push_back(to_string(contador));
+                }
+                contador++;
+            }
+            a.ClearTokens();
         }
     }
 
@@ -118,7 +138,7 @@ public:
             for (int i = 0; i < (signed)filemodel.size(); i++)
             {
 
-                newfile << filemodel[i];
+                newfile << filemodel[i] << " ";
             }
             newfile << endl
                     << "T : ";

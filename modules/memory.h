@@ -91,7 +91,7 @@ public:
     void BitwisePrint(Chunks space, int used = 0)
     {
         int op = space.chunckPlace[used];
-        int opaux = op;
+        // int opaux = op;
         int totalSpace = space.chunckSpace[used];
         string decoder = codebase[0];
         for (int i = 0; i < (signed)decoder.length(); i++)
@@ -100,7 +100,7 @@ public:
             {
                 used++;
                 op = space.chunckPlace[used];
-                opaux = op;
+                // opaux = op;
                 totalSpace += space.chunckSpace[used];
             }
 
@@ -111,10 +111,22 @@ public:
                 cout << op << " " << code[i] << " ";
                 op += FunctionCheck::FunctionOP(stoi(code[i]));
             }
+
             if (decoder[i] == '1')
             {
                 // Falta ajustar para multiplos chunks sendo usados
-                cout << stoi(code[i]) + opaux << " ";
+                int auxspace = 0;
+                int alocatedspace = 0;
+                for (int j = used; j < (signed)space.chunckSpace.size(); j++)
+                {
+                    auxspace += space.chunckSpace[j];
+                    if (stoi(code[i]) < auxspace)
+                    {
+                        cout << stoi(code[i]) + space.chunckPlace[j] - alocatedspace << " ";
+                        break;
+                    }
+                    alocatedspace += space.chunckSpace[j];
+                }
             }
         }
     }

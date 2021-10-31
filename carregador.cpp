@@ -35,6 +35,14 @@ int main(int argc, char const *argv[])
     }
 
     chunks.ReadArgs(argv, chunkIndice);
+    char response;
+    if (!chunks.MemOverflow())
+    {
+        cout << "DESEJA CONTINUAR S/N" << endl;
+        cin.get(response);
+        if (response != 'S')
+            return 0;
+    }
     //chunks.PrintChunks();
     //mem.PrintMemory();
 

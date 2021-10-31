@@ -89,4 +89,33 @@ public:
             total_space += chunckSpace[i];
         cout << "Total Chuncks space " << total_space << endl;
     }
+
+    bool MemOverflow()
+    {
+        for (int i = 0; i < (signed)chunckPlace.size(); i++)
+        {
+            for (int j = 0; j < (signed)chunckPlace.size(); j++)
+            {
+                if (j == i)
+                    continue;
+                if (chunckPlace[i] < chunckPlace[j] && (chunckPlace[i] + chunckSpace[i]) < (chunckPlace[j] + chunckSpace[j]) && (chunckPlace[i] + chunckSpace[i]) > chunckPlace[j])
+                {
+                    cout << "CHUNK " << i << " PODERA SOBRESCREVER CHUNK " << j << endl;
+                    return false;
+                }
+                if (chunckPlace[i] > chunckPlace[j] && (chunckPlace[i] + chunckSpace[i]) > (chunckPlace[j] + chunckSpace[j]) && chunckPlace[i] < (chunckPlace[j] + chunckSpace[j]))
+                {
+                    cout << "CHUNK " << i << " PODERA SOBRESCREVER CHUNK " << j << endl;
+                    return false;
+                }
+
+                if (chunckPlace[i] < chunckPlace[j] && (chunckPlace[i] + chunckSpace[i]) > (chunckPlace[j] + chunckSpace[j]))
+                {
+                    cout << "CHUNK " << i << " PODERA SOBRESCREVER CHUNK " << j << endl;
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 };

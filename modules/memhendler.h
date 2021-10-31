@@ -74,8 +74,6 @@ public:
         {
             mem_vec[i].WriteFile(space, used);
             used = mem_vec[i].chunksused;
-            cout << endl
-                 << " ---------------------------------------------" << endl;
         }
     }
 };

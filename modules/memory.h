@@ -135,6 +135,66 @@ public:
         }
     }
 
+    void BitwiseWrite(Chunks space, int used = 0)
+    {
+
+        fstream newfile;
+        TokenReader a;
+        string filename = codename + ".saida";
+
+        newfile.open(filename, ios::out);
+
+        int op = space.chunckPlace[used];
+        int usedspace = used;
+        int totalSpace = space.chunckSpace[used];
+        string decoder = codebase[0];
+
+        if (newfile.is_open())
+        {
+            for (int i = 0; i < (signed)decoder.length(); i++)
+            {
+                if (totalSpace <= i)
+                {
+                    //used++;
+                    usedspace++;
+                    op = space.chunckPlace[usedspace];
+
+                    totalSpace += space.chunckSpace[usedspace];
+                }
+
+                if (decoder[i] == '0')
+                {
+                    if (i != 0)
+                        newfile << endl;
+                    newfile << op << " " << code[i] << " ";
+                    if (CheckFunctionBitwise(i))
+                        op += FunctionCheck::FunctionOP(stoi(code[i]));
+                    else
+                        op += 1;
+                }
+
+                if (decoder[i] == '1')
+                {
+                    // Falta ajustar para multiplos chunks sendo usados
+                    int auxspace = 0;
+                    int alocatedspace = 0;
+                    for (int j = used; j < (signed)space.chunckSpace.size(); j++)
+                    {
+                        auxspace += space.chunckSpace[j];
+                        if (stoi(code[i]) < auxspace)
+                        {
+                            newfile << stoi(code[i]) + space.chunckPlace[j] - alocatedspace << " ";
+                            break;
+                        }
+                        alocatedspace += space.chunckSpace[j];
+                    }
+                }
+            }
+        }
+
+        newfile.close();
+    }
+
     void MapPrint(Chunks space, int used = 0)
     {
         int op = space.chunckPlace[used];
@@ -186,6 +246,67 @@ public:
         }
     }
 
+    void MapWrite(Chunks space, int used = 0)
+    {
+
+        fstream newfile;
+        TokenReader a;
+        string filename = codename + ".saida";
+
+        newfile.open(filename, ios::out);
+
+        int op = space.chunckPlace[used];
+        int counter = 0;
+        int totalSpace = space.chunckSpace[used];
+        int usedspace = used;
+        string decoder = codebase[0];
+
+        if (newfile.is_open())
+        {
+
+            for (int i = 0; i < (signed)code.size(); i++)
+            {
+                if (totalSpace <= i)
+                {
+                    usedspace++;
+                    op = space.chunckPlace[usedspace];
+                    totalSpace += space.chunckSpace[usedspace];
+                }
+
+                if (i != stoi(codebase[counter]))
+                {
+                    if (i != 0)
+                        newfile << endl;
+                    newfile << op << " " << code[i] << " ";
+                    if (i < stoi(codebase[counter]))
+                        op += FunctionCheck::FunctionOP(stoi(code[i]));
+                    else
+                        op += 1;
+                }
+                else
+                {
+
+                    int auxspace = 0;
+                    int alocatedspace = 0;
+                    for (int j = used; j < (signed)space.chunckSpace.size(); j++)
+                    {
+                        auxspace += space.chunckSpace[j];
+                        if (stoi(code[i]) < auxspace)
+                        {
+                            newfile << stoi(code[i]) + space.chunckPlace[j] - alocatedspace << " ";
+                            break;
+                        }
+                        alocatedspace += space.chunckSpace[j];
+                    }
+                    if (counter < (signed)codebase.size() - 1)
+                        counter++;
+                }
+            }
+        }
+
+        newfile.close();
+    }
+
     void WriteFile(Chunks space, int used = 0)
     {
         // Define o tipo de escrita bitwise = true, mapa = false
@@ -193,11 +314,13 @@ public:
 
         if (dectype)
         {
-            BitwisePrint(space, used);
+            // BitwisePrint(space, used);
+            BitwiseWrite(space, used);
         }
         else
         {
-            MapPrint(space, used);
+            // MapPrint(space, used);
+            MapWrite(space, used);
         }
     }
 };

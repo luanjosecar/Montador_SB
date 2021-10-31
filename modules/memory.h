@@ -91,7 +91,7 @@ public:
     void BitwisePrint(Chunks space, int used = 0)
     {
         int op = space.chunckPlace[used];
-        // int opaux = op;
+        int usedspace = 0;
         int totalSpace = space.chunckSpace[used];
         string decoder = codebase[0];
         for (int i = 0; i < (signed)decoder.length(); i++)
@@ -100,7 +100,7 @@ public:
             {
                 used++;
                 op = space.chunckPlace[used];
-                // opaux = op;
+                usedspace = i;
                 totalSpace += space.chunckSpace[used];
             }
 
@@ -109,7 +109,10 @@ public:
                 if (i != 0)
                     cout << endl;
                 cout << op << " " << code[i] << " ";
-                op += FunctionCheck::FunctionOP(stoi(code[i]));
+                if (CheckFunctionBitwise(i))
+                    op += FunctionCheck::FunctionOP(stoi(code[i]));
+                else
+                    op += 1;
             }
 
             if (decoder[i] == '1')
@@ -122,11 +125,61 @@ public:
                     auxspace += space.chunckSpace[j];
                     if (stoi(code[i]) < auxspace)
                     {
-                        cout << stoi(code[i]) + space.chunckPlace[j] - alocatedspace << " ";
+                        cout << stoi(code[i]) + space.chunckPlace[j] - alocatedspace - usedspace << " ";
                         break;
                     }
                     alocatedspace += space.chunckSpace[j];
                 }
+            }
+        }
+    }
+
+    void MapPrint(Chunks space, int used = 0)
+    {
+        int op = space.chunckPlace[used];
+        int counter = 0;
+        int totalSpace = space.chunckSpace[used];
+        int usedspace = 0;
+        string decoder = codebase[0];
+        for (int i = 0; i < (signed)code.size(); i++)
+        {
+            if (totalSpace <= i)
+            {
+                used++;
+                op = space.chunckPlace[used];
+                // opaux = op;
+                totalSpace += space.chunckSpace[used];
+                usedspace = i;
+            }
+
+            if (i != stoi(codebase[counter]))
+            {
+                if (i != 0)
+                    cout << endl;
+                cout << op << " " << code[i] << " ";
+                if (i < stoi(codebase[counter]))
+                    op += FunctionCheck::FunctionOP(stoi(code[i]));
+                else
+                    op += 1;
+            }
+            else
+            {
+
+                // Falta ajustar para multiplos chunks sendo usados
+                int auxspace = 0;
+                int alocatedspace = 0;
+                for (int j = used; j < (signed)space.chunckSpace.size(); j++)
+                {
+                    auxspace += space.chunckSpace[j];
+                    if (stoi(code[i]) < auxspace)
+                    {
+                        cout << stoi(code[i]) + space.chunckPlace[j] - alocatedspace - usedspace << " ";
+                        break;
+                    }
+                    alocatedspace += space.chunckSpace[j];
+                }
+                if (counter < (signed)codebase.size() - 1)
+                    counter++;
             }
         }
     }
@@ -139,6 +192,10 @@ public:
         if (dectype)
         {
             BitwisePrint(space, used);
+        }
+        else
+        {
+            MapPrint(space, used);
         }
     }
 };

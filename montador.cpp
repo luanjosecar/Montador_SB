@@ -8,42 +8,13 @@
 #include "modules\tokenvalidator.h"
 #include "modules\erros.h"
 #include "modules\functioncheck.h"
-
+#include "modules\header.h"
 using namespace std;
 
-bool PRINTER = false;
-
-bool FilenameValidation(string s)
-{
-    string temp = "";
-    string aux1 = "";
-    bool aux2 = false;
-    for (int i = 0; i < (signed)s.length(); ++i)
-    {
-        char up = s[i];
-        if (up == '.')
-        {
-            aux2 = true;
-            continue;
-        }
-        if (aux2)
-            aux1.push_back(up);
-        else
-            temp.push_back(up);
-    }
-    if (!temp.empty() && aux1 == "asm")
-        return true;
-    return false;
-}
+bool PRINTER = true;
 
 int main(int argc, char const *argv[])
 {
-
-    if (!FilenameValidation(argv[1]))
-    {
-        cout << "Nome do arquivo Invalido por favor confirme a extensão " << endl;
-        return 0;
-    }
 
     fstream newfile;
 
@@ -51,8 +22,10 @@ int main(int argc, char const *argv[])
     TS symbs;
     FunctionCheck funcs;
     ErrHandler err;
+    HeaderCheck header;
 
-    vector<string> writer;
+    vector<string>
+        writer;
     int line = 0;
     int pc = 0;
     int line_file = 0;
@@ -60,7 +33,15 @@ int main(int argc, char const *argv[])
     bool sectionText = false;
     string labelaux = "";
 
-    newfile.open(argv[1], ios::in);
+    if (!header.ValidateArgs(argc, argv))
+    {
+        cout << "Argumentos de entrada invalidos " << endl;
+        return 0;
+    }
+
+    //header.ValidateArgs(argc, argv);
+
+    newfile.open(header.filename, ios::in);
 
     if (newfile.is_open())
     {
@@ -181,7 +162,6 @@ int main(int argc, char const *argv[])
                     reader.ClearTokens();
                     continue;
                 }
-
                 // Verifica se o item em análise é uma Label
                 for (int i = 0; i < (signed)reader.tokens.size(); i++)
                 {
@@ -230,16 +210,43 @@ int main(int argc, char const *argv[])
 
     // reader.PrintWriter(writer);
     // symbs.PrintTable();
+
+    if (header.execution == 2)
+        header.Bitmap(writer);
+    if (header.execution == 3)
+        header.Realocacao(writer);
+
+    header.filesize = symbs.ProgramSize();
+    header.code = writer;
     symbs.NonDef(err.message);
-    if (err.message.size() > 0)
-        err.PrintErros();
-    else
+
+    switch (header.execution)
     {
-        if (PRINTER)
-            reader.WriteFile(writer, argv[1]);
+    case 1:
+        // Modelo de impressão anterior --------------------------------------------------
+        if (err.message.size() > 0)
+            err.PrintErros();
         else
-            reader.Writer(writer, argv[1]);
+        {
+            if (PRINTER)
+                reader.WriteFile(writer, argv[1]);
+            else
+                reader.Writer(writer, argv[1]);
+        }
+        //------------------------------------------------------------------------------
+
+        break;
+    case 2:
+    case 3:
+        if (strcmp(argv[1], "-e") && err.message.size() > 0)
+            err.PrintErros();
+        else
+            header.WriteFile();
+        break;
+    default:
+        break;
     }
+
     // symbs.PrintTable();
     return 0;
 }

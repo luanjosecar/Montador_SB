@@ -7,7 +7,7 @@ enum Func
 {
     ADD = 1,
     SUB,
-    MULT,
+    MUL,
     DIV,
     JMP,
     JMPN,
@@ -26,7 +26,7 @@ class FunctionCheck
 {
 public:
     //Validation a;
-    vector<string> basefunc{"ADD", "SUB", "MULT", "DIV", "JMP", "JMPN", "JMPP", "JMPZ", "COPY", "LOAD", "STORE", "INPUT", "OUTPUT", "STOP"};
+    vector<string> basefunc{"ADD", "SUB", "MUL", "DIV", "JMP", "JMPN", "JMPP", "JMPZ", "COPY", "LOAD", "STORE", "INPUT", "OUTPUT", "STOP"};
     //ErrHandler err;
     int base = 0;
 
@@ -51,7 +51,7 @@ public:
                 {
                 case ADD:
                 case SUB:
-                case MULT:
+                case MUL:
                 case DIV:
                 case JMP:
                 case JMPP:
@@ -131,5 +131,32 @@ public:
         }
         return false;
     }
-    // Verificação se é const ou SPACE
+
+    static int FunctionOP(int name)
+    {
+        switch (name)
+        {
+        case ADD:
+        case SUB:
+        case MUL:
+        case DIV:
+        case JMP:
+        case JMPP:
+        case JMPN:
+        case JMPZ:
+        case LOAD:
+        case STORE:
+        case OUTPUT:
+        case INPUT:
+            return 2;
+        case COPY:
+            return 3;
+        case STOP:
+            return 1;
+        default:
+            return 1;
+            // Erro função não encontrada
+            break;
+        }
+    }
 };

@@ -19,7 +19,7 @@ enum Func
 {
     ADD = 1,
     SUB,
-    MULT,
+    MUL,
     DIV,
     JMP,
     JMPN,
@@ -65,7 +65,7 @@ public:
                 {
                 case ADD:
                 case SUB:
-                case MULT:
+                case MUL:
                 case DIV:
                 case JMP:
                 case JMPP:
@@ -155,8 +155,8 @@ public:
                 PrintData("SUB", tp[0]);
                 ACC = ACC - MathFunc(tp);
                 break;
-            case MULT:
-                PrintData("MULT", tp[0]);
+            case MUL:
+                PrintData("MUL", tp[0]);
                 ACC = ACC * MathFunc(tp);
                 break;
             case DIV:

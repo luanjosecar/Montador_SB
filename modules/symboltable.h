@@ -14,7 +14,7 @@ class TS
 public:
     vector<Symbols> symbs;
     //Validation a;
-    vector<string> Funcs{"ADD", "SUB", "MULT", "DIV", "JMP", "JMPP", "JMPN", "JMPZ", "COPY", "LOAD", "STORE", "INPUT", "OUTPUT", "STOP", "SPACE", "CONST", "SECTION", "DATA", "TEXT"};
+    vector<string> Funcs{"ADD", "SUB", "MUL", "DIV", "JMP", "JMPP", "JMPN", "JMPZ", "COPY", "LOAD", "STORE", "INPUT", "OUTPUT", "STOP", "SPACE", "CONST", "SECTION", "DATA", "TEXT"};
 
     void AddSymbol(string name, int pos, int line, int value, bool status)
     {

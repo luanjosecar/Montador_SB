@@ -7,7 +7,7 @@ enum Func
 {
     ADD = 1,
     SUB,
-    MULT,
+    MUL,
     DIV,
     JMP,
     JMPN,
@@ -26,7 +26,7 @@ class FunctionCheck
 {
 public:
     //Validation a;
-    vector<string> basefunc{"ADD", "SUB", "MULT", "DIV", "JMP", "JMPN", "JMPP", "JMPZ", "COPY", "LOAD", "STORE", "INPUT", "OUTPUT", "STOP"};
+    vector<string> basefunc{"ADD", "SUB", "MUL", "DIV", "JMP", "JMPN", "JMPP", "JMPZ", "COPY", "LOAD", "STORE", "INPUT", "OUTPUT", "STOP"};
     //ErrHandler err;
     int base = 0;
 
@@ -51,7 +51,7 @@ public:
                 {
                 case ADD:
                 case SUB:
-                case MULT:
+                case MUL:
                 case DIV:
                 case JMP:
                 case JMPP:
@@ -138,7 +138,7 @@ public:
         {
         case ADD:
         case SUB:
-        case MULT:
+        case MUL:
         case DIV:
         case JMP:
         case JMPP:
